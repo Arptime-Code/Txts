@@ -34,6 +34,13 @@ function writeExtensionsConfig(config) {
   helpers.writeFile(configPath, JSON.stringify(config, null, 2));
 }
 
+// === VERSION ===
+
+function getVersion() {
+  var pkg = require(path.join(__dirname, '..', 'package.json'));
+  return pkg.version;
+}
+
 // === COMMAND DISPATCH ===
 
 function run(args) {
@@ -43,6 +50,16 @@ function run(args) {
   }
 
   var firstArg = args[0];
+
+  if (firstArg === '--help' || firstArg === '-h') {
+    printHelp();
+    return;
+  }
+
+  if (firstArg === '--version' || firstArg === '-v') {
+    console.log('txts v' + getVersion());
+    return;
+  }
 
   if (firstArg === 'extension') {
     handleExtension(args.slice(1));
@@ -54,12 +71,16 @@ function run(args) {
 
 function printHelp() {
   var helpText = [
-    'txts - A minimalist programming language',
+    'txts v' + getVersion() + ' - A minimalist programming language',
     '',
     'Usage:',
     '  txts <file.txts> [output.txt]    Run a txts program',
     '  txts extension install <name>     Install an extension',
     '  txts extension <name>             Run an extension',
+    '  txts --help, -h                   Show this help message',
+    '  txts --version, -v                Print version',
+    '',
+    'If no output file is given, output is written to stdout.',
     '',
     'Extensions:',
     '  txtspm  - Package manager for txts projects'

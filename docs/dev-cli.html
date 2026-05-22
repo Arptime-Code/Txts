@@ -64,20 +64,37 @@
       <h3>Key Functions</h3>
       <table>
         <tr><th>Function</th><th>Description</th></tr>
-        <tr><td><span class="inline-code">run(args)</span></td><td>Main dispatch. Routes to <span class="inline-code">handleRun</span> or <span class="inline-code">handleExtension</span></td></tr>
+        <tr><td><span class="inline-code">getVersion()</span></td><td>Reads and returns the version from <span class="inline-code">package.json</span></td></tr>
+        <tr><td><span class="inline-code">run(args)</span></td><td>Main dispatch. Checks flags first, then routes to <span class="inline-code">handleRun</span> or <span class="inline-code">handleExtension</span></td></tr>
         <tr><td><span class="inline-code">handleRun(args)</span></td><td>Validates file path and extension, calls <span class="inline-code">executor.runProgram</span></td></tr>
         <tr><td><span class="inline-code">handleExtension(args)</span></td><td>Handles extension install and execution</td></tr>
-        <tr><td><span class="inline-code">printHelp()</span></td><td>Prints usage information to stderr</td></tr>
+        <tr><td><span class="inline-code">printHelp()</span></td><td>Prints usage information including version, flags, and extension list</td></tr>
       </table>
 
       <h3>Dispatch Logic</h3>
-      <p>The <span class="inline-code">run(args)</span> function checks if the first argument starts with <span class="inline-code">--</span> (extension flag) or is a file path:</p>
+      <p>The <span class="inline-code">run(args)</span> function checks for built-in flags first, then dispatches:</p>
       <div class="code-block">
-        <span class="kw">if</span> (args[<span class="num">0</span>] &amp;&amp; args[<span class="num">0</span>].startsWith(<span class="str">'--'</span>)) {<br>
-        &nbsp;&nbsp;handleExtension(args);<br>
-        } <span class="kw">else</span> {<br>
-        &nbsp;&nbsp;handleRun(args);<br>
-        }
+        <span class="kw">if</span> (args.length === <span class="num">0</span>) {<br>
+        &nbsp;&nbsp;printHelp();<br>
+        &nbsp;&nbsp;<span class="kw">return</span>;<br>
+        }<br>
+        <br>
+        <span class="kw">if</span> (firstArg === <span class="str">'--help'</span> || firstArg === <span class="str">'-h'</span>) {<br>
+        &nbsp;&nbsp;printHelp();<br>
+        &nbsp;&nbsp;<span class="kw">return</span>;<br>
+        }<br>
+        <br>
+        <span class="kw">if</span> (firstArg === <span class="str">'--version'</span> || firstArg === <span class="str">'-v'</span>) {<br>
+        &nbsp;&nbsp;console.log(<span class="str">'txts v'</span> + getVersion());<br>
+        &nbsp;&nbsp;<span class="kw">return</span>;<br>
+        }<br>
+        <br>
+        <span class="kw">if</span> (firstArg === <span class="str">'extension'</span>) {<br>
+        &nbsp;&nbsp;handleExtension(args.slice(<span class="num">1</span>));<br>
+        &nbsp;&nbsp;<span class="kw">return</span>;<br>
+        }<br>
+        <br>
+        handleRun(args);
       </div>
 
       <h3>File Validation</h3>

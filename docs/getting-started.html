@@ -70,9 +70,13 @@
       <span class="kw">VARIABLE</span> <span class="lib">txts</span>.<span class="var">OUTPUT</span> <span class="str">"Hello, world!"</span>
     </div>
 
-    <p>Run it with the txts interpreter:</p>
+    <p>Run it with the txts interpreter (from inside the Txts repo):</p>
     <div class="code-block">
-      node /path/to/txts/general/index.js hello.txts
+      node bin/txts hello.txts
+    </div>
+    <p>Or if the repo is somewhere else on your system:</p>
+    <div class="code-block">
+      node /path/to/txts/bin/txts hello.txts
     </div>
 
     <p>You should see:</p>
@@ -92,9 +96,16 @@
     <h2>Output to a File</h2>
     <p>You can also redirect output to a file instead of stdout:</p>
     <div class="code-block">
-      node /path/to/txts/general/index.js hello.txts output.txt
+      node /path/to/txts/bin/txts hello.txts output.txt
     </div>
     <p>This writes the output to <span class="inline-code">output.txt</span> instead of printing it.</p>
+
+    <h2>CLI Flags</h2>
+    <p>The interpreter also supports these flags:</p>
+    <div class="code-block">
+      node bin/txts --help     <span class="cmt"># Show full usage information<br></span>
+      node bin/txts --version  <span class="cmt"># Print version number</span>
+    </div>
 
     <h2>What's Next?</h2>
     <p>Now that you can run a basic program, learn about <a href="syntax.html">Basic Syntax</a> and the three commands that make up the entire language.</p>
