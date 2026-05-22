@@ -1,0 +1,149 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>txts - Error Handling</title>
+  <link rel="stylesheet" href="style.css">
+</head>
+<body>
+  <header class="top-header">
+    <a href="index.html" class="logo">txts<span>docs</span></a>
+    <div class="nav-links">
+      <a href="index.html">Home</a>
+      <a href="examples.html">Examples</a>
+      <a href="developer.html">Dev Docs</a>
+    </div>
+  </header>
+  <nav class="sidebar">
+    <div class="sidebar-section">
+      <div class="sidebar-section-title">Tutorial</div>
+      <a href="index.html">Home</a>
+      <a href="getting-started.html">Getting Started</a>
+      <a href="syntax.html">Basic Syntax</a>
+      <a href="variables.html">Variables &amp; OUTPUT</a>
+      <a href="imports.html">IMPORT &amp; Libraries</a>
+      <a href="calls.html">CALL &amp; Functions</a>
+      <a href="txts-library.html">The txts Library</a>
+      <a href="project-structure.html">Project Structure</a>
+      <a href="txtspm.html">Package Manager</a>
+      <a href="examples.html">Examples</a>
+    </div>
+    <div class="sidebar-section">
+      <div class="sidebar-section-title">Reference</div>
+      <a href="developer.html">Dev Docs Home</a>
+      <a href="dev-cli.html">CLI &amp; Entry Point</a>
+      <a href="dev-helpers.html">Helpers</a>
+      <a href="dev-parser.html">Parser</a>
+      <a href="dev-resolver.html">Resolver</a>
+      <a href="dev-builtins.html">Builtins</a>
+      <a href="dev-executor.html">Executor</a>
+      <a href="dev-txtspm.html">txtspm Extension</a>
+      <a href="dev-repl.html">REPL</a>
+      <a href="dev-errors.html" class="active">Error Handling</a>
+    </div>
+  </nav>
+  <main class="main-content">
+    <h1>Error Handling &amp; Extending the Language</h1>
+    <p>Reference guide for all errors produced by the interpreter and how to extend the language.</p>
+
+    <h2>Error Handling Summary</h2>
+    <p>All errors are thrown as <span class="inline-code">Error</span> objects and propagate to the CLI handler, which prints them to stderr.</p>
+    <table>
+      <tr><th>Error Scenario</th><th>Error Message</th><th>Source</th></tr>
+      <tr>
+        <td>File not found</td>
+        <td><span class="inline-code">Error: File "..." not found.</span></td>
+        <td>cli.js</td>
+      </tr>
+      <tr>
+        <td>Wrong file extension</td>
+        <td><span class="inline-code">Error: File must have a ".txts" extension.</span></td>
+        <td>cli.js</td>
+      </tr>
+      <tr>
+        <td>Function not found</td>
+        <td><span class="inline-code">Error: Function "lib.fn" not found in project root ...</span></td>
+        <td>executor.js</td>
+      </tr>
+      <tr>
+        <td>CALL without IMPORT</td>
+        <td><span class="inline-code">Error: Cannot CALL ... library "..." is not imported in this file. Use IMPORT ... first.</span></td>
+        <td>executor.js</td>
+      </tr>
+      <tr>
+        <td>Write to unimported library</td>
+        <td><span class="inline-code">Error: Cannot assign to "lib.x": library "lib" is not imported in this file. Use IMPORT lib first.</span></td>
+        <td>executor.js</td>
+      </tr>
+      <tr>
+        <td>Read from unimported library</td>
+        <td><span class="inline-code">Error: Cannot read "lib.x": library "lib" is not imported in this file. Use IMPORT lib first.</span></td>
+        <td>executor.js</td>
+      </tr>
+      <tr>
+        <td>Write to txts.* (not OUTPUT)</td>
+        <td><span class="inline-code">Error: Cannot assign to "txts.NAME": only "txts.OUTPUT" is writable in the internal "txts" library.</span></td>
+        <td>executor.js</td>
+      </tr>
+      <tr>
+        <td>Recursion limit exceeded</td>
+        <td><span class="inline-code">Error: Recursion limit of 50 reached when calling lib.fn.</span></td>
+        <td>executor.js</td>
+      </tr>
+      <tr>
+        <td>Variable not found</td>
+        <td><span class="inline-code">Error: Variable "lib.x" does not exist in library "lib".</span></td>
+        <td>executor.js</td>
+      </tr>
+    </table>
+
+    <h2>Extending the Language</h2>
+    <p>To add new features to txts, here are the modules you'd typically modify:</p>
+    <table>
+      <tr><th>Change</th><th>Modules to Modify</th></tr>
+      <tr>
+        <td>Add a new command type</td>
+        <td><span class="inline-code">parser.js</span> (new parse function), <span class="inline-code">executor.js</span> (new execute function), <span class="inline-code">cli.js</span> (update help text)</td>
+      </tr>
+      <tr>
+        <td>Add a new built-in variable</td>
+        <td><span class="inline-code">builtins.js</span> (add to <span class="inline-code">createBuiltinVariables</span>)</td>
+      </tr>
+      <tr>
+        <td>Change library resolution</td>
+        <td><span class="inline-code">resolver.js</span> (modify <span class="inline-code">resolveLibraryPath</span>)</td>
+      </tr>
+      <tr>
+        <td>Add new extension command</td>
+        <td><span class="inline-code">extensions/txtspm/operations.js</span> (new handler), <span class="inline-code">extensions/txtspm/index.js</span> (add dispatch case)</td>
+      </tr>
+      <tr>
+        <td>Change file isolation behavior</td>
+        <td><span class="inline-code">executor.js</span> (modify <span class="inline-code">executeFile</span>, <span class="inline-code">executeImport</span>, <span class="inline-code">executeCall</span>)</td>
+      </tr>
+      <tr>
+        <td>Change variable semantics</td>
+        <td><span class="inline-code">executor.js</span> (modify <span class="inline-code">executeVariable</span>)</td>
+      </tr>
+      <tr>
+        <td>Add error handling</td>
+        <td>Add throw statements in the relevant module; errors are caught by the CLI handler</td>
+      </tr>
+    </table>
+
+    <h2>Error Propagation</h2>
+    <p>Errors follow a simple propagation path:</p>
+    <div class="code-block">
+      executor.js &rarr; (throw Error) &rarr; cli.js (catch) &rarr; stderr
+    </div>
+    <p>The CLI handler wraps execution in a try-catch. Errors are printed to stderr with <span class="inline-code">console.error</span>. Non-error output goes to stdout.</p>
+
+    <div class="pager">
+      <a href="dev-repl.html">&laquo; REPL</a>
+      <span></span>
+    </div>
+    <div class="footer">txts Language Documentation</div>
+  </main>
+</body>
+</html>

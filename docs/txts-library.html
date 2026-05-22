@@ -1,0 +1,118 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>txts - The txts Library</title>
+  <link rel="stylesheet" href="style.css">
+</head>
+<body>
+  <header class="top-header">
+    <a href="index.html" class="logo">txts<span>docs</span></a>
+    <div class="nav-links">
+      <a href="index.html">Home</a>
+      <a href="examples.html">Examples</a>
+      <a href="developer.html">Dev Docs</a>
+    </div>
+  </header>
+  <nav class="sidebar">
+    <div class="sidebar-section">
+      <div class="sidebar-section-title">Tutorial</div>
+      <a href="index.html">Home</a>
+      <a href="getting-started.html">Getting Started</a>
+      <a href="syntax.html">Basic Syntax</a>
+      <a href="variables.html">Variables &amp; OUTPUT</a>
+      <a href="imports.html">IMPORT &amp; Libraries</a>
+      <a href="calls.html">CALL &amp; Functions</a>
+      <a href="txts-library.html" class="active">The txts Library</a>
+      <a href="project-structure.html">Project Structure</a>
+      <a href="txtspm.html">Package Manager</a>
+      <a href="examples.html">Examples</a>
+    </div>
+    <div class="sidebar-section">
+      <div class="sidebar-section-title">Reference</div>
+      <a href="developer.html">Dev Docs Home</a>
+      <a href="dev-cli.html">CLI &amp; Entry Point</a>
+      <a href="dev-helpers.html">Helpers</a>
+      <a href="dev-parser.html">Parser</a>
+      <a href="dev-resolver.html">Resolver</a>
+      <a href="dev-builtins.html">Builtins</a>
+      <a href="dev-executor.html">Executor</a>
+      <a href="dev-txtspm.html">txtspm Extension</a>
+      <a href="dev-repl.html">REPL</a>
+      <a href="dev-errors.html">Error Handling</a>
+    </div>
+  </nav>
+  <main class="main-content">
+    <h1>The txts Built-in Library</h1>
+    <p>The <span class="inline-code">txts</span> library is the only built-in library in the language. It requires no filesystem directory &mdash; it's always available and provides the core mechanics for program output.</p>
+
+    <h2>Variables in the txts Library</h2>
+    <table>
+      <tr><th>Variable</th><th>Type</th><th>Writable?</th><th>Description</th></tr>
+      <tr>
+        <td><span class="inline-code">txts.OUTPUT</span></td>
+        <td>String</td>
+        <td>Yes</td>
+        <td>The output channel. Whatever value is in this variable at the end of program execution is written to stdout or a file.</td>
+      </tr>
+      <tr>
+        <td><span class="inline-code">txts.CLEAR</span></td>
+        <td>String (empty)</td>
+        <td>No</td>
+        <td>A sentinel value that evaluates to an empty string. Used to clear other variables.</td>
+      </tr>
+    </table>
+
+    <div class="info-box warning">
+      <strong>Important:</strong> The <span class="inline-code">txts</span> library is <strong>read-only</strong>. You cannot create arbitrary variables in it (e.g., <span class="inline-code">VARIABLE txts.secret "no"</span> will throw an error). Only <span class="inline-code">txts.OUTPUT</span> is writable.
+    </div>
+
+    <h2>txts.OUTPUT</h2>
+    <p>This is the primary way to produce output from a txts program. Every program that produces output must use this variable. Since <span class="inline-code">VARIABLE</span> <strong>appends</strong>, you can build up output incrementally:</p>
+    <div class="code-block">
+      <span class="kw">IMPORT</span> <span class="lib">txts</span><br>
+      <span class="kw">VARIABLE</span> <span class="lib">txts</span>.<span class="var">OUTPUT</span> <span class="str">"Hello, "</span><br>
+      <span class="kw">VARIABLE</span> <span class="lib">txts</span>.<span class="var">OUTPUT</span> <span class="str">"world!"</span>
+    </div>
+
+    <p>You can also append another variable's value to OUTPUT:</p>
+    <div class="code-block">
+      <span class="kw">IMPORT</span> <span class="lib">txts</span><br>
+      <span class="kw">IMPORT</span> <span class="lib">lib</span><br>
+      <span class="kw">VARIABLE</span> <span class="lib">txts</span>.<span class="var">OUTPUT</span> <span class="lib">lib</span>.<span class="var">greeting</span>
+    </div>
+
+    <p>If <span class="inline-code">txts.OUTPUT</span> is never written to, it defaults to an empty string, and the program outputs nothing.</p>
+
+    <h2>txts.CLEAR</h2>
+    <p><span class="inline-code">txts.CLEAR</span> is a special sentinel variable. Unlike a regular <span class="inline-code">VARIABLE</span> command (which appends), using <span class="inline-code">txts.CLEAR</span> as the source <strong>overwrites</strong> the target variable to an empty string &mdash; it resets it:</p>
+    <div class="code-block">
+      <span class="kw">IMPORT</span> <span class="lib">txts</span><br>
+      <span class="kw">IMPORT</span> <span class="lib">suite</span><br>
+      <span class="kw">VARIABLE</span> <span class="lib">suite</span>.<span class="var">secret</span> <span class="str">"This will disappear"</span><br>
+      <span class="kw">VARIABLE</span> <span class="lib">suite</span>.<span class="var">secret</span> <span class="lib">txts</span>.<span class="var">CLEAR</span><br>
+      <span class="kw">VARIABLE</span> <span class="lib">txts</span>.<span class="var">OUTPUT</span> <span class="lib">suite</span>.<span class="var">secret</span>  <span class="cmt"># Outputs nothing (empty string)</span>
+    </div>
+
+    <p>The <span class="inline-code">CLEAR</span> variable itself is read-only &mdash; you cannot change its value.</p>
+
+    <h2>Always Available</h2>
+    <p>The <span class="inline-code">txts</span> namespace is created automatically when a program starts. However, you still need to <span class="inline-code">IMPORT txts</span> in each file that uses it, just like any other library. This keeps every file self-documenting about its dependencies.</p>
+
+    <h2>Best Practices</h2>
+    <ul>
+      <li>Always <span class="inline-code">IMPORT txts</span> at the top of any file that reads or writes <span class="inline-code">txts.OUTPUT</span></li>
+      <li>Use <span class="inline-code">txts.CLEAR</span> to reset intermediate variables when needed</li>
+      <li>Use multiple <span class="inline-code">VARIABLE txts.OUTPUT</span> calls to build output incrementally &mdash; they append rather than overwrite</li>
+      <li>Never try to create custom variables in the <span class="inline-code">txts</span> namespace &mdash; use your own library instead</li>
+    </ul>
+
+    <div class="pager">
+      <a href="calls.html">&laquo; CALL &amp; Functions</a>
+      <a href="project-structure.html" class="next">Next &raquo;</a>
+    </div>
+    <div class="footer">txts Language Documentation</div>
+  </main>
+</body>
+</html>

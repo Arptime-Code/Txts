@@ -1,0 +1,356 @@
+/* === W3Schools-Inspired Style for txts Documentation === */
+
+:root {
+  --primary: #04AA6D;
+  --primary-dark: #059862;
+  --sidebar-bg: #f1f1f1;
+  --sidebar-width: 220px;
+  --code-bg: #2d2d2d;
+  --code-color: #f8f8f2;
+  --green-light: #d9fce4;
+  --border-color: #ddd;
+  --text-color: #333;
+  --link-color: #04AA6D;
+  --link-hover: #059862;
+  --heading-font: 'Segoe UI', Arial, sans-serif;
+  --body-font: 'Segoe UI', Arial, sans-serif;
+  --code-font: 'Consolas', 'Monaco', 'Courier New', monospace;
+}
+
+* {
+  margin: 0;
+  padding: 0;
+  box-sizing: border-box;
+}
+
+body {
+  font-family: var(--body-font);
+  line-height: 1.6;
+  color: var(--text-color);
+  background: #fff;
+}
+
+/* === TOP HEADER === */
+.top-header {
+  background: var(--primary);
+  color: #fff;
+  padding: 0 24px;
+  height: 50px;
+  display: flex;
+  align-items: center;
+  position: fixed;
+  top: 0;
+  left: 0;
+  right: 0;
+  z-index: 100;
+  box-shadow: 0 2px 4px rgba(0,0,0,0.1);
+}
+
+.top-header .logo {
+  font-size: 22px;
+  font-weight: 700;
+  color: #fff;
+  text-decoration: none;
+  letter-spacing: -0.5px;
+}
+
+.top-header .logo span {
+  font-weight: 300;
+  opacity: 0.85;
+}
+
+.top-header .nav-links {
+  margin-left: auto;
+  display: flex;
+  gap: 20px;
+}
+
+.top-header .nav-links a {
+  color: #fff;
+  text-decoration: none;
+  font-size: 14px;
+  opacity: 0.85;
+  transition: opacity 0.2s;
+}
+
+.top-header .nav-links a:hover {
+  opacity: 1;
+}
+
+/* === SIDEBAR === */
+.sidebar {
+  position: fixed;
+  top: 50px;
+  left: 0;
+  width: var(--sidebar-width);
+  height: calc(100vh - 50px);
+  background: var(--sidebar-bg);
+  overflow-y: auto;
+  border-right: 1px solid var(--border-color);
+  padding: 16px 0;
+  z-index: 50;
+}
+
+.sidebar::-webkit-scrollbar {
+  width: 6px;
+}
+
+.sidebar::-webkit-scrollbar-thumb {
+  background: #ccc;
+  border-radius: 3px;
+}
+
+.sidebar-section {
+  margin-bottom: 8px;
+}
+
+.sidebar-section-title {
+  font-size: 12px;
+  font-weight: 700;
+  text-transform: uppercase;
+  color: #888;
+  padding: 8px 16px 4px;
+  letter-spacing: 0.5px;
+}
+
+.sidebar a {
+  display: block;
+  padding: 6px 16px 6px 20px;
+  color: #444;
+  text-decoration: none;
+  font-size: 14px;
+  border-left: 3px solid transparent;
+  transition: all 0.15s;
+}
+
+.sidebar a:hover {
+  background: #e4e4e4;
+  color: #222;
+}
+
+.sidebar a.active {
+  background: #fff;
+  color: var(--primary);
+  border-left-color: var(--primary);
+  font-weight: 600;
+}
+
+/* === MAIN CONTENT === */
+.main-content {
+  margin-left: var(--sidebar-width);
+  margin-top: 50px;
+  padding: 32px 48px 80px;
+  max-width: 900px;
+}
+
+.main-content h1 {
+  font-size: 36px;
+  font-weight: 700;
+  margin-bottom: 8px;
+  color: #222;
+}
+
+.main-content h2 {
+  font-size: 26px;
+  font-weight: 600;
+  margin: 32px 0 12px;
+  color: #222;
+  border-bottom: 1px solid #eee;
+  padding-bottom: 8px;
+}
+
+.main-content h3 {
+  font-size: 20px;
+  font-weight: 600;
+  margin: 24px 0 10px;
+  color: #333;
+}
+
+.main-content p {
+  margin: 12px 0;
+  font-size: 16px;
+}
+
+.main-content ul, .main-content ol {
+  margin: 12px 0 12px 24px;
+}
+
+.main-content li {
+  margin: 6px 0;
+  font-size: 16px;
+}
+
+.main-content a {
+  color: var(--link-color);
+  text-decoration: none;
+}
+
+.main-content a:hover {
+  text-decoration: underline;
+}
+
+/* === INFO BOXES === */
+.info-box {
+  background: #fff3cd;
+  border-left: 4px solid #ffc107;
+  padding: 12px 16px;
+  margin: 16px 0;
+  border-radius: 0 4px 4px 0;
+  font-size: 15px;
+}
+
+.info-box.tip {
+  background: var(--green-light);
+  border-left-color: var(--primary);
+}
+
+.info-box.warning {
+  background: #f8d7da;
+  border-left-color: #dc3545;
+}
+
+/* === CODE BLOCKS === */
+.code-block {
+  background: var(--code-bg);
+  color: var(--code-color);
+  padding: 16px 20px;
+  border-radius: 6px;
+  font-family: var(--code-font);
+  font-size: 14px;
+  line-height: 1.7;
+  overflow-x: auto;
+  margin: 16px 0;
+  position: relative;
+}
+
+.code-block .kw { color: #66d9ef; } /* keywords */
+.code-block .lib { color: #a6e22e; } /* library names */
+.code-block .var { color: #fd971f; } /* variables */
+.code-block .str { color: #e6db74; } /* strings */
+.code-block .cmt { color: #75715e; font-style: italic; } /* comments */
+.code-block .builtin { color: #ae81ff; } /* builtins like OUTPUT, CLEAR */
+
+.inline-code {
+  background: #f1f1f1;
+  padding: 2px 6px;
+  border-radius: 3px;
+  font-family: var(--code-font);
+  font-size: 14px;
+  color: #d63384;
+}
+
+/* === TRY IT BUTTON === */
+.try-it-btn {
+  display: inline-block;
+  background: var(--primary);
+  color: #fff;
+  padding: 8px 18px;
+  border-radius: 4px;
+  text-decoration: none;
+  font-size: 14px;
+  font-weight: 600;
+  margin: 8px 0 16px;
+  transition: background 0.2s;
+  border: none;
+  cursor: pointer;
+}
+
+.try-it-btn:hover {
+  background: var(--primary-dark);
+  text-decoration: none;
+}
+
+/* === TABLES === */
+table {
+  width: 100%;
+  border-collapse: collapse;
+  margin: 16px 0;
+}
+
+table th, table td {
+  border: 1px solid var(--border-color);
+  padding: 10px 14px;
+  text-align: left;
+}
+
+table th {
+  background: var(--primary);
+  color: #fff;
+  font-weight: 600;
+}
+
+table tr:nth-child(even) {
+  background: #f9f9f9;
+}
+
+table tr:hover {
+  background: #f1f1f1;
+}
+
+/* === PREV/NEXT NAVIGATION === */
+.pager {
+  display: flex;
+  justify-content: space-between;
+  margin: 48px 0 24px;
+  padding-top: 24px;
+  border-top: 1px solid var(--border-color);
+}
+
+.pager a {
+  display: inline-block;
+  padding: 10px 20px;
+  background: var(--sidebar-bg);
+  color: #444;
+  text-decoration: none;
+  border-radius: 4px;
+  font-size: 14px;
+  font-weight: 600;
+  transition: all 0.15s;
+}
+
+.pager a:hover {
+  background: var(--primary);
+  color: #fff;
+  text-decoration: none;
+}
+
+.pager .next {
+  margin-left: auto;
+}
+
+/* === DEV DOCS SPECIFICS === */
+.dev-section {
+  background: #f8f9fa;
+  border: 1px solid var(--border-color);
+  border-radius: 6px;
+  padding: 16px 20px;
+  margin: 16px 0;
+}
+
+.dev-section h3 {
+  margin-top: 0;
+}
+
+/* === FOOTER === */
+.footer {
+  text-align: center;
+  padding: 24px;
+  color: #888;
+  font-size: 13px;
+  border-top: 1px solid var(--border-color);
+  margin-top: 48px;
+}
+
+/* === RESPONSIVE === */
+@media (max-width: 768px) {
+  .sidebar {
+    display: none;
+  }
+  .main-content {
+    margin-left: 0;
+    padding: 20px 24px 60px;
+  }
+  .top-header .nav-links {
+    display: none;
+  }
+}

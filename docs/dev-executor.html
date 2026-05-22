@@ -1,0 +1,176 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>txts - Executor</title>
+  <link rel="stylesheet" href="style.css">
+</head>
+<body>
+  <header class="top-header">
+    <a href="index.html" class="logo">txts<span>docs</span></a>
+    <div class="nav-links">
+      <a href="index.html">Home</a>
+      <a href="examples.html">Examples</a>
+      <a href="developer.html">Dev Docs</a>
+    </div>
+  </header>
+  <nav class="sidebar">
+    <div class="sidebar-section">
+      <div class="sidebar-section-title">Tutorial</div>
+      <a href="index.html">Home</a>
+      <a href="getting-started.html">Getting Started</a>
+      <a href="syntax.html">Basic Syntax</a>
+      <a href="variables.html">Variables &amp; OUTPUT</a>
+      <a href="imports.html">IMPORT &amp; Libraries</a>
+      <a href="calls.html">CALL &amp; Functions</a>
+      <a href="txts-library.html">The txts Library</a>
+      <a href="project-structure.html">Project Structure</a>
+      <a href="txtspm.html">Package Manager</a>
+      <a href="examples.html">Examples</a>
+    </div>
+    <div class="sidebar-section">
+      <div class="sidebar-section-title">Reference</div>
+      <a href="developer.html">Dev Docs Home</a>
+      <a href="dev-cli.html">CLI &amp; Entry Point</a>
+      <a href="dev-helpers.html">Helpers</a>
+      <a href="dev-parser.html">Parser</a>
+      <a href="dev-resolver.html">Resolver</a>
+      <a href="dev-builtins.html">Builtins</a>
+      <a href="dev-executor.html" class="active">Executor</a>
+      <a href="dev-txtspm.html">txtspm Extension</a>
+      <a href="dev-repl.html">REPL</a>
+      <a href="dev-errors.html">Error Handling</a>
+    </div>
+  </nav>
+  <main class="main-content">
+    <h1>Executor (general/executor.js) &mdash; The Core Engine</h1>
+    <p>The executor is the heart of the interpreter. It manages the execution context, runs commands, and handles all variable resolution.</p>
+
+    <h2>Constants</h2>
+    <table>
+      <tr><th>Constant</th><th>Value</th><th>Description</th></tr>
+      <tr><td><span class="inline-code">RECURSION_LIMIT</span></td><td>50</td><td>Maximum CALL nesting depth to prevent infinite recursion</td></tr>
+      <tr><td><span class="inline-code">OUTPUT_TARGET_STDOUT</span></td><td><span class="str">'stdout'</span></td><td>Sentinel value for console output (vs. file output)</td></tr>
+    </table>
+
+    <h2>Context Object</h2>
+    <div class="code-block">
+      {<br>
+      &nbsp;&nbsp;variables:      { ... },       <span class="cmt">// All variables, keyed by library then by name<br></span>
+      &nbsp;&nbsp;projectRoot:    <span class="str">'/path/to/project'</span>, <br>
+      &nbsp;&nbsp;recursionDepth: <span class="num">0</span>,            <span class="cmt">// Current CALL depth<br></span>
+      &nbsp;&nbsp;fileImports:    {}              <span class="cmt">// Libraries imported by the current file<br></span>
+      }
+    </div>
+
+    <h2>Execution Flow</h2>
+
+    <h3>runProgram(filePath, outputTarget)</h3>
+    <div class="dev-section">
+      <p>The top-level entry point for program execution:</p>
+      <ol>
+        <li>Finds the project root via <span class="inline-code">resolver.findProjectRoot</span></li>
+        <li>Creates a fresh context with builtin variables (from <span class="inline-code">builtins.createBuiltinVariables</span>)</li>
+        <li>Calls <span class="inline-code">executeFile</span> on the target file</li>
+        <li>Reads <span class="inline-code">txts.OUTPUT</span> and writes it to stdout or a file</li>
+      </ol>
+    </div>
+
+    <h3>executeFile(filePath, context)</h3>
+    <div class="dev-section">
+      <p>Executes a single <span class="inline-code">.txts</span> file within the given context:</p>
+      <ol>
+        <li>If the file doesn't exist, returns silently</li>
+        <li><strong>Resets</strong> <span class="inline-code">context.fileImports = {}</span> &mdash; this provides file-level isolation</li>
+        <li>Reads the file content and parses it into commands</li>
+        <li>Executes all commands in order via <span class="inline-code">executeCommands</span></li>
+      </ol>
+      <div class="info-box tip">
+        <strong>File isolation:</strong> Each file gets its own <span class="inline-code">fileImports</span> state. Libraries imported in one file aren't automatically available in another &mdash; each file must <span class="inline-code">IMPORT</span> what it needs.
+      </div>
+    </div>
+
+    <h3>executeCommands(commands, context)</h3>
+    <div class="dev-section">
+      <p>Iterates over an array of command objects and dispatches each by its <span class="inline-code">type</span>:</p>
+      <ul>
+        <li><span class="inline-code">'import'</span> &rarr; <span class="inline-code">executeImport</span></li>
+        <li><span class="inline-code">'call'</span> &rarr; <span class="inline-code">executeCall</span></li>
+        <li><span class="inline-code">'variable'</span> &rarr; <span class="inline-code">executeVariable</span></li>
+      </ul>
+    </div>
+
+    <h2>Execute Import</h2>
+    <div class="dev-section">
+      <div class="code-block">
+        <span class="kw">function</span> executeImport(command, context) {<br>
+        &nbsp;&nbsp;<span class="kw">var</span> libraryName = command.library;<br>
+        &nbsp;&nbsp;context.fileImports[libraryName] = <span class="kw">true</span>;<br>
+        &nbsp;&nbsp;<span class="kw">if</span> (libraryName === builtins.TXTS_LIBRARY_NAME) {<br>
+        &nbsp;&nbsp;&nbsp;&nbsp;<span class="kw">return</span>;<br>
+        &nbsp;&nbsp;}<br>
+        }
+      </div>
+      <p><span class="inline-code">IMPORT</span> is intentionally minimal. It just marks the library as imported in the current file's <span class="inline-code">fileImports</span>. No namespace is created, no files are executed. The <span class="inline-code">txts</span> library is handled as a no-op since it's always available.</p>
+    </div>
+
+    <h2>Execute Call</h2>
+    <div class="dev-section">
+      <p>Executes a specific function file:</p>
+      <ol>
+        <li>Checks that the library is in <span class="inline-code">fileImports</span> (throws if not imported)</li>
+        <li>Checks recursion depth against <span class="inline-code">RECURSION_LIMIT</span> (throws if exceeded)</li>
+        <li>Resolves the function path via <span class="inline-code">resolver.resolveFunctionPath</span></li>
+        <li><strong>Saves</strong> <span class="inline-code">fileImports</span>, increments recursion depth</li>
+        <li>Executes the function file</li>
+        <li><strong>Restores</strong> <span class="inline-code">fileImports</span>, decrements recursion depth</li>
+      </ol>
+      <div class="info-box warning">
+        <strong>File isolation:</strong> CALL saves/restores <span class="inline-code">fileImports</span> so the called function operates in its own import context. However, <span class="inline-code">context.variables</span> is shared globally &mdash; any variable a function sets is visible to the caller.
+      </div>
+    </div>
+
+    <h2>Execute Variable</h2>
+    <div class="dev-section">
+      <p>Handles the <span class="inline-code">VARIABLE</span> command with <strong>append semantics</strong>:</p>
+      <ol>
+        <li><strong>Guard:</strong> If target is <span class="inline-code">txts.*</span> and not <span class="inline-code">txts.OUTPUT</span> &rarr; throw (txts is read-only)</li>
+        <li><strong>Guard:</strong> If target library not in <span class="inline-code">fileImports</span> &rarr; throw</li>
+        <li><strong>Guard:</strong> If source is a reference and its library not in <span class="inline-code">fileImports</span> &rarr; throw</li>
+        <li><strong>Lazy namespace:</strong> Creates <span class="inline-code">context.variables[target.library]</span> if it doesn't exist yet</li>
+        <li>Resolves the source value via <span class="inline-code">resolveValue</span></li>
+        <li>If source is <span class="inline-code">txts.CLEAR</span> &rarr; overwrite target to <span class="str">''</span></li>
+        <li>Otherwise &rarr; <strong>append</strong>: <span class="inline-code">currentValue + resolvedValue</span></li>
+      </ol>
+      <div class="info-box tip">
+        <strong>Append vs Overwrite:</strong> Multiple <span class="inline-code">VARIABLE</span> calls to the same variable accumulate. Use <span class="inline-code">txts.CLEAR</span> to reset a variable to empty.
+      </div>
+    </div>
+
+    <h2>Value Resolution</h2>
+
+    <h3>resolveValue(context, source)</h3>
+    <table>
+      <tr><th>Source Type</th><th>Behavior</th></tr>
+      <tr><td>String</td><td>Returns the string value directly</td></tr>
+      <tr><td>Reference</td><td>Calls <span class="inline-code">resolveReference</span> to look up the variable</td></tr>
+    </table>
+
+    <h3>resolveReference(context, library, name)</h3>
+    <div class="dev-section">
+      <ol>
+        <li>Creates <span class="inline-code">context.variables[library]</span> if it doesn't exist (lazy namespace)</li>
+        <li>Checks that <span class="inline-code">libVars[name] !== undefined</span> (throws if not found)</li>
+        <li>Returns the value (<span class="inline-code">''</span> is a valid value, distinct from <span class="inline-code">undefined</span>)</li>
+      </ol>
+    </div>
+
+    <div class="pager">
+      <a href="dev-builtins.html">&laquo; Builtins</a>
+      <a href="dev-txtspm.html" class="next">Next: txtspm Extension &raquo;</a>
+    </div>
+    <div class="footer">txts Language Documentation</div>
+  </main>
+</body>
+</html>

@@ -1,0 +1,95 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>txts - REPL</title>
+  <link rel="stylesheet" href="style.css">
+</head>
+<body>
+  <header class="top-header">
+    <a href="index.html" class="logo">txts<span>docs</span></a>
+    <div class="nav-links">
+      <a href="index.html">Home</a>
+      <a href="examples.html">Examples</a>
+      <a href="developer.html">Dev Docs</a>
+    </div>
+  </header>
+  <nav class="sidebar">
+    <div class="sidebar-section">
+      <div class="sidebar-section-title">Tutorial</div>
+      <a href="index.html">Home</a>
+      <a href="getting-started.html">Getting Started</a>
+      <a href="syntax.html">Basic Syntax</a>
+      <a href="variables.html">Variables &amp; OUTPUT</a>
+      <a href="imports.html">IMPORT &amp; Libraries</a>
+      <a href="calls.html">CALL &amp; Functions</a>
+      <a href="txts-library.html">The txts Library</a>
+      <a href="project-structure.html">Project Structure</a>
+      <a href="txtspm.html">Package Manager</a>
+      <a href="examples.html">Examples</a>
+    </div>
+    <div class="sidebar-section">
+      <div class="sidebar-section-title">Reference</div>
+      <a href="developer.html">Dev Docs Home</a>
+      <a href="dev-cli.html">CLI &amp; Entry Point</a>
+      <a href="dev-helpers.html">Helpers</a>
+      <a href="dev-parser.html">Parser</a>
+      <a href="dev-resolver.html">Resolver</a>
+      <a href="dev-builtins.html">Builtins</a>
+      <a href="dev-executor.html">Executor</a>
+      <a href="dev-txtspm.html">txtspm Extension</a>
+      <a href="dev-repl.html" class="active">REPL</a>
+      <a href="dev-errors.html">Error Handling</a>
+    </div>
+  </nav>
+  <main class="main-content">
+    <h1>REPL (extensions/repl.js)</h1>
+    <p>The REPL module provides a reusable interactive Read-Eval-Print-Loop using Node.js <span class="inline-code">readline</span>. It's used by the txtspm extension for interactive commands.</p>
+
+    <h2>createRepl(commandHandler, options)</h2>
+    <div class="dev-section">
+      <p>Creates a REPL instance with a custom prompt and greeting:</p>
+      <div class="code-block">
+        <span class="kw">var</span> repl = <span class="kw">require</span>(<span class="str">'./repl'</span>);<br>
+        <br>
+        repl.createRepl(handleCommand, {<br>
+        &nbsp;&nbsp;prompt: <span class="str">'txtspm&gt; '</span>,<br>
+        &nbsp;&nbsp;greeting: <span class="str">'txtspm package manager. Type "help" for commands.'</span><br>
+        });
+      </div>
+    </div>
+
+    <h2>Key Features</h2>
+    <div class="dev-section">
+      <table>
+        <tr><th>Feature</th><th>Description</th></tr>
+        <tr><td>Exit commands</td><td><span class="inline-code">exit</span>, <span class="inline-code">quit</span>, <span class="inline-code">q</span> all exit the REPL</td></tr>
+        <tr><td>Empty lines</td><td>Silently ignored (no handler call)</td></tr>
+        <tr><td>Error handling</td><td>Errors from the command handler are caught and printed without crashing the REPL</td></tr>
+        <tr><td>Customizable prompt</td><td>Set via <span class="inline-code">options.prompt</span></td></tr>
+        <tr><td>Greeting message</td><td>Displayed on startup via <span class="inline-code">options.greeting</span></td></tr>
+      </table>
+    </div>
+
+    <h2>Usage in txtspm</h2>
+    <div class="dev-section">
+      <p>The txtspm extension uses the REPL to provide an interactive command interface. The command handler splits input by spaces and dispatches to the appropriate txtspm operation:</p>
+      <div class="code-block">
+        <span class="kw">function</span> handleCommand(input) {<br>
+        &nbsp;&nbsp;<span class="kw">var</span> parts = input.trim().split(<span class="str">/\s+/</span>);<br>
+        &nbsp;&nbsp;<span class="kw">var</span> cmd = parts[<span class="num">0</span>];<br>
+        &nbsp;&nbsp;<span class="kw">var</span> args = parts.slice(<span class="num">1</span>);<br>
+        &nbsp;&nbsp;<span class="kw">switch</span> (cmd) { ... }<br>
+        }
+      </div>
+    </div>
+
+    <div class="pager">
+      <a href="dev-txtspm.html">&laquo; txtspm Extension</a>
+      <a href="dev-errors.html" class="next">Next: Error Handling &raquo;</a>
+    </div>
+    <div class="footer">txts Language Documentation</div>
+  </main>
+</body>
+</html>

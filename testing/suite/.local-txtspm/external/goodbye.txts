@@ -1,0 +1,2 @@
+IMPORT txts
+VARIABLE txts.OUTPUT "Goodbye from external"

@@ -1,0 +1,133 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>txts - CALL &amp; Functions</title>
+  <link rel="stylesheet" href="style.css">
+</head>
+<body>
+  <header class="top-header">
+    <a href="index.html" class="logo">txts<span>docs</span></a>
+    <div class="nav-links">
+      <a href="index.html">Home</a>
+      <a href="examples.html">Examples</a>
+      <a href="developer.html">Dev Docs</a>
+    </div>
+  </header>
+  <nav class="sidebar">
+    <div class="sidebar-section">
+      <div class="sidebar-section-title">Tutorial</div>
+      <a href="index.html">Home</a>
+      <a href="getting-started.html">Getting Started</a>
+      <a href="syntax.html">Basic Syntax</a>
+      <a href="variables.html">Variables &amp; OUTPUT</a>
+      <a href="imports.html">IMPORT &amp; Libraries</a>
+      <a href="calls.html" class="active">CALL &amp; Functions</a>
+      <a href="txts-library.html">The txts Library</a>
+      <a href="project-structure.html">Project Structure</a>
+      <a href="txtspm.html">Package Manager</a>
+      <a href="examples.html">Examples</a>
+    </div>
+    <div class="sidebar-section">
+      <div class="sidebar-section-title">Reference</div>
+      <a href="developer.html">Dev Docs Home</a>
+      <a href="dev-cli.html">CLI &amp; Entry Point</a>
+      <a href="dev-helpers.html">Helpers</a>
+      <a href="dev-parser.html">Parser</a>
+      <a href="dev-resolver.html">Resolver</a>
+      <a href="dev-builtins.html">Builtins</a>
+      <a href="dev-executor.html">Executor</a>
+      <a href="dev-txtspm.html">txtspm Extension</a>
+      <a href="dev-repl.html">REPL</a>
+      <a href="dev-errors.html">Error Handling</a>
+    </div>
+  </nav>
+  <main class="main-content">
+    <h1>CALL &amp; Functions</h1>
+    <p>The <span class="inline-code">CALL</span> command executes a function from an imported library. In txts, a "function" is simply another <span class="inline-code">.txts</span> file that lives inside a library directory.</p>
+
+    <h2>Basic Call</h2>
+    <p>To call a function, use <span class="inline-code">CALL</span> followed by a dotted reference to the function:</p>
+    <div class="code-block">
+      <span class="kw">IMPORT</span> <span class="lib">lib</span><br>
+      <span class="kw">CALL</span> <span class="lib">lib</span>.<span class="var">sayhello</span>
+    </div>
+    <p>This executes the file <span class="inline-code">.local-txtspm/lib/sayhello.txts</span>.</p>
+
+    <h2>How Functions Work</h2>
+    <p>When you call a function, txts:</p>
+    <ol>
+      <li>Finds the corresponding <span class="inline-code">.txts</span> file in the library directory</li>
+      <li>Creates a fresh <span class="inline-code">fileImports</span> context (isolation)</li>
+      <li>Executes all commands in that file</li>
+      <li>Restores the caller's <span class="inline-code">fileImports</span> after completion</li>
+    </ol>
+
+    <div class="info-box tip">
+      <strong>Note:</strong> Functions execute in the same shared variable namespace. This means a function can modify variables that the caller can then read.
+    </div>
+
+    <h2>Function Example</h2>
+    <p>A library with multiple functions:</p>
+    <div class="code-block">
+      <span class="cmt"># .local-txtspm/lib/sayhello.txts<br></span>
+      <span class="kw">IMPORT</span> <span class="lib">txts</span><br>
+      <span class="kw">VARIABLE</span> <span class="lib">txts</span>.<span class="var">OUTPUT</span> <span class="str">"Called function hello!"</span>
+    </div>
+    <div class="code-block">
+      <span class="cmt"># .local-txtspm/lib/greet.txts<br></span>
+      <span class="kw">IMPORT</span> <span class="lib">txts</span><br>
+      <span class="kw">IMPORT</span> <span class="lib">lib</span><br>
+      <span class="kw">VARIABLE</span> <span class="lib">lib</span>.<span class="var">greeting</span> <span class="str">"Hello from library"</span>
+    </div>
+    <p>Then from your main file:</p>
+    <div class="code-block">
+      <span class="kw">IMPORT</span> <span class="lib">lib</span><br>
+      <span class="kw">CALL</span> <span class="lib">lib</span>.<span class="var">sayhello</span>     <span class="cmt"># Outputs "Called function hello!"<br></span>
+      <span class="kw">CALL</span> <span class="lib">lib</span>.<span class="var">greet</span>       <span class="cmt"># Sets lib.greeting</span>
+    </div>
+
+    <h2>Chaining Functions</h2>
+    <p>Functions can set variables in their library namespace, which other functions (or the caller) can read. This is how data flows between functions:</p>
+    <div class="code-block">
+      <span class="cmt"># main.txts<br></span>
+      <span class="kw">IMPORT</span> <span class="lib">txts</span><br>
+      <span class="kw">IMPORT</span> <span class="lib">lib</span><br>
+      <span class="kw">CALL</span> <span class="lib">lib</span>.<span class="var">greet</span>           <span class="cmt"># Sets lib.greeting<br></span>
+      <span class="kw">VARIABLE</span> <span class="lib">txts</span>.<span class="var">OUTPUT</span> <span class="lib">lib</span>.<span class="var">greeting</span>  <span class="cmt"># Outputs it</span>
+    </div>
+
+    <h2>Calling External Library Functions</h2>
+    <p>Functions from external (imported) libraries work the same way:</p>
+    <div class="code-block">
+      <span class="kw">IMPORT</span> <span class="lib">external</span><br>
+      <span class="kw">CALL</span> <span class="lib">external</span>.<span class="var">goodbye</span>
+    </div>
+
+    <h2>Call Rules</h2>
+    <ul>
+      <li>The library must be <span class="inline-code">IMPORT</span>ed before you can call its functions</li>
+      <li>Functions are referenced as <span class="inline-code">library.functionname</span></li>
+      <li>The function name corresponds to a <span class="inline-code">.txts</span> file in the library directory</li>
+      <li>Recursion is limited to 50 levels deep</li>
+      <li>When a function file runs, it gets its own isolated file imports &mdash; the caller's imports are restored afterward</li>
+    </ul>
+
+    <h2>Functions vs Variables</h2>
+    <table>
+      <tr><th>Aspect</th><th>CALL</th><th>VARIABLE</th></tr>
+      <tr><td>Purpose</td><td>Execute a file</td><td>Set or copy a value</td></tr>
+      <tr><td>Syntax</td><td><span class="inline-code">CALL lib.func</span></td><td><span class="inline-code">VARIABLE lib.var value</span></td></tr>
+      <tr><td>Side effects</td><td>May modify any variables</td><td>Appends to exactly one variable</td></tr>
+      <tr><td>File imports</td><td>Isolated from caller</td><td>Uses current file imports</td></tr>
+    </table>
+
+    <div class="pager">
+      <a href="imports.html">&laquo; IMPORT &amp; Libraries</a>
+      <a href="txts-library.html" class="next">Next &raquo;</a>
+    </div>
+    <div class="footer">txts Language Documentation</div>
+  </main>
+</body>
+</html>

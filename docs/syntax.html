@@ -1,0 +1,136 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>txts - Basic Syntax</title>
+  <link rel="stylesheet" href="style.css">
+</head>
+<body>
+  <header class="top-header">
+    <a href="index.html" class="logo">txts<span>docs</span></a>
+    <div class="nav-links">
+      <a href="index.html">Home</a>
+      <a href="examples.html">Examples</a>
+      <a href="developer.html">Dev Docs</a>
+    </div>
+  </header>
+  <nav class="sidebar">
+    <div class="sidebar-section">
+      <div class="sidebar-section-title">Tutorial</div>
+      <a href="index.html">Home</a>
+      <a href="getting-started.html">Getting Started</a>
+      <a href="syntax.html" class="active">Basic Syntax</a>
+      <a href="variables.html">Variables &amp; OUTPUT</a>
+      <a href="imports.html">IMPORT &amp; Libraries</a>
+      <a href="calls.html">CALL &amp; Functions</a>
+      <a href="txts-library.html">The txts Library</a>
+      <a href="project-structure.html">Project Structure</a>
+      <a href="txtspm.html">Package Manager</a>
+      <a href="examples.html">Examples</a>
+    </div>
+    <div class="sidebar-section">
+      <div class="sidebar-section-title">Reference</div>
+      <a href="developer.html">Dev Docs Home</a>
+      <a href="dev-cli.html">CLI &amp; Entry Point</a>
+      <a href="dev-helpers.html">Helpers</a>
+      <a href="dev-parser.html">Parser</a>
+      <a href="dev-resolver.html">Resolver</a>
+      <a href="dev-builtins.html">Builtins</a>
+      <a href="dev-executor.html">Executor</a>
+      <a href="dev-txtspm.html">txtspm Extension</a>
+      <a href="dev-repl.html">REPL</a>
+      <a href="dev-errors.html">Error Handling</a>
+    </div>
+  </nav>
+  <main class="main-content">
+    <h1>Basic Syntax</h1>
+    <p>txts has only <strong>three commands</strong>. Every line in a <span class="inline-code">.txts</span> file is one of these commands, a comment, or blank.</p>
+
+    <h2>The Three Commands</h2>
+    <table>
+      <tr><th>Command</th><th>Purpose</th><th>Example</th></tr>
+      <tr>
+        <td><span class="inline-code">IMPORT</span></td>
+        <td>Import a library namespace</td>
+        <td><span class="inline-code">IMPORT lib</span></td>
+      </tr>
+      <tr>
+        <td><span class="inline-code">CALL</span></td>
+        <td>Execute a function from a library</td>
+        <td><span class="inline-code">CALL lib.sayhello</span></td>
+      </tr>
+      <tr>
+        <td><span class="inline-code">VARIABLE</span></td>
+        <td>Append a value to a variable</td>
+        <td><span class="inline-code">VARIABLE txts.OUTPUT "hello"</span></td>
+      </tr>
+    </table>
+
+    <h2>Comments</h2>
+    <p>Any line that does <strong>not</strong> start with <span class="inline-code">IMPORT</span>, <span class="inline-code">CALL</span>, or <span class="inline-code">VARIABLE</span> is treated as a comment. This means you can write free-form text anywhere in your files:</p>
+    <div class="code-block">
+      <span class="cmt">This line is a comment<br></span>
+      <span class="cmt">It can contain any text at all<br></span>
+      <br>
+      <span class="cmt">Below is actual code:<br></span>
+      <span class="kw">IMPORT</span> <span class="lib">txts</span><br>
+      <span class="kw">VARIABLE</span> <span class="lib">txts</span>.<span class="var">OUTPUT</span> <span class="str">"Hello"</span>
+    </div>
+
+    <div class="info-box tip">
+      <strong>Tip:</strong> Use comments to document your code! Each txts file is also a self-documenting
+      description of what it does.
+    </div>
+
+    <h2>Dotted References</h2>
+    <p>Variables and functions are referenced using <strong>dot notation</strong>: <span class="inline-code">library.name</span>.</p>
+    <p>The part before the dot is the <strong>library name</strong> (namespace). The part after is the <strong>variable or function name</strong>.</p>
+    <div class="code-block">
+      <span class="lib">txts</span>.<span class="var">OUTPUT</span>     <span class="cmt">-- "txts" is the library, "OUTPUT" is the variable<br></span>
+      <span class="lib">lib</span>.<span class="var">greeting</span>    <span class="cmt">-- "lib" is the library, "greeting" is the variable<br></span>
+      <span class="lib">external</span>.<span class="var">sayhello</span> <span class="cmt">-- CALL uses the same notation</span>
+    </div>
+
+    <h2>Strings</h2>
+    <p>String values are written inside double quotes:</p>
+    <div class="code-block">
+      <span class="str">"Hello, world!"</span><br>
+      <span class="str">"Any text in double quotes"</span>
+    </div>
+
+    <p>Strings can be escaped with backslashes:</p>
+    <div class="code-block">
+      <span class="str">"She said \"hello\""</span>
+    </div>
+
+    <h2>Case Sensitivity</h2>
+    <p>All commands are <strong>uppercase</strong>: <span class="inline-code">IMPORT</span>, <span class="inline-code">CALL</span>, <span class="inline-code">VARIABLE</span>. Library names and variable names are case-sensitive.</p>
+
+    <h2>Line Format</h2>
+    <p>Each line follows a strict structure:</p>
+    <table>
+      <tr><th>Command</th><th>Format</th></tr>
+      <tr><td><span class="inline-code">IMPORT</span></td><td><span class="inline-code">IMPORT libraryname</span></td></tr>
+      <tr><td><span class="inline-code">CALL</span></td><td><span class="inline-code">CALL library.functionname</span></td></tr>
+      <tr><td><span class="inline-code">VARIABLE</span></td><td><span class="inline-code">VARIABLE library.variablename "value"</span> or <span class="inline-code">VARIABLE library.variablename otherlib.variable</span></td></tr>
+    </table>
+
+    <p>Leading whitespace is ignored &mdash; you can indent for readability if you like.</p>
+
+    <h2>Best Practices</h2>
+    <ul>
+      <li><strong>Import at the top</strong> &mdash; Put all <span class="inline-code">IMPORT</span> statements at the beginning of your file</li>
+      <li><strong>Use comments</strong> &mdash; Explain what each section does</li>
+      <li><strong>One command per line</strong> &mdash; Each line has exactly one instruction</li>
+      <li><strong>Use the suite convention</strong> &mdash; In test files, create variables in your own library namespace</li>
+    </ul>
+
+    <div class="pager">
+      <a href="getting-started.html">&laquo; Getting Started</a>
+      <a href="variables.html" class="next">Next &raquo;</a>
+    </div>
+    <div class="footer">txts Language Documentation</div>
+  </main>
+</body>
+</html>

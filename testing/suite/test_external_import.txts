@@ -1,0 +1,5 @@
+IMPORT suite
+IMPORT txts
+IMPORT external
+CALL external.hello
+VARIABLE txts.OUTPUT external.greeting

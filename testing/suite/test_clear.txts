@@ -1,0 +1,5 @@
+IMPORT suite
+IMPORT txts
+VARIABLE suite.secret "This should disappear"
+VARIABLE suite.secret txts.CLEAR
+VARIABLE txts.OUTPUT suite.secret

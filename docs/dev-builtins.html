@@ -1,0 +1,96 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>txts - Builtins</title>
+  <link rel="stylesheet" href="style.css">
+</head>
+<body>
+  <header class="top-header">
+    <a href="index.html" class="logo">txts<span>docs</span></a>
+    <div class="nav-links">
+      <a href="index.html">Home</a>
+      <a href="examples.html">Examples</a>
+      <a href="developer.html">Dev Docs</a>
+    </div>
+  </header>
+  <nav class="sidebar">
+    <div class="sidebar-section">
+      <div class="sidebar-section-title">Tutorial</div>
+      <a href="index.html">Home</a>
+      <a href="getting-started.html">Getting Started</a>
+      <a href="syntax.html">Basic Syntax</a>
+      <a href="variables.html">Variables &amp; OUTPUT</a>
+      <a href="imports.html">IMPORT &amp; Libraries</a>
+      <a href="calls.html">CALL &amp; Functions</a>
+      <a href="txts-library.html">The txts Library</a>
+      <a href="project-structure.html">Project Structure</a>
+      <a href="txtspm.html">Package Manager</a>
+      <a href="examples.html">Examples</a>
+    </div>
+    <div class="sidebar-section">
+      <div class="sidebar-section-title">Reference</div>
+      <a href="developer.html">Dev Docs Home</a>
+      <a href="dev-cli.html">CLI &amp; Entry Point</a>
+      <a href="dev-helpers.html">Helpers</a>
+      <a href="dev-parser.html">Parser</a>
+      <a href="dev-resolver.html">Resolver</a>
+      <a href="dev-builtins.html" class="active">Builtins</a>
+      <a href="dev-executor.html">Executor</a>
+      <a href="dev-txtspm.html">txtspm Extension</a>
+      <a href="dev-repl.html">REPL</a>
+      <a href="dev-errors.html">Error Handling</a>
+    </div>
+  </nav>
+  <main class="main-content">
+    <h1>Builtins (general/builtins.js)</h1>
+    <p>The builtins module defines the built-in <span class="inline-code">txts</span> library &mdash; the only library that's available without a corresponding directory on disk. It provides the <span class="inline-code">OUTPUT</span> channel and the <span class="inline-code">CLEAR</span> sentinel.</p>
+
+    <h2>Constants</h2>
+    <table>
+      <tr><th>Constant</th><th>Value</th><th>Purpose</th></tr>
+      <tr><td><span class="inline-code">TXTS_LIBRARY_NAME</span></td><td><span class="str">'txts'</span></td><td>The name of the built-in library namespace</td></tr>
+      <tr><td><span class="inline-code">OUTPUT_VARIABLE_NAME</span></td><td><span class="str">'OUTPUT'</span></td><td>The output channel variable &mdash; its value becomes the program's output</td></tr>
+      <tr><td><span class="inline-code">CLEAR_VARIABLE_NAME</span></td><td><span class="str">'CLEAR'</span></td><td>The clear sentinel &mdash; assigning this to a variable clears it</td></tr>
+    </table>
+
+    <h2>createBuiltinVariables()</h2>
+    <div class="dev-section">
+      <p>Creates the initial variable state with the <span class="inline-code">txts</span> library pre-populated:</p>
+      <div class="code-block">
+        {<br>
+        &nbsp;&nbsp;txts: {<br>
+        &nbsp;&nbsp;&nbsp;&nbsp;OUTPUT: <span class="str">''</span>,<br>
+        &nbsp;&nbsp;&nbsp;&nbsp;CLEAR: <span class="str">''</span><br>
+        &nbsp;&nbsp;}<br>
+        }
+      </div>
+      <p>Key design details:</p>
+      <ul>
+        <li><strong>OUTPUT</strong> starts as an empty string and accumulates via append</li>
+        <li><strong>CLEAR</strong> is always an empty string sentinel &mdash; its value never changes. When used as a source in <span class="inline-code">VARIABLE</span>, the executor detects it and sets the target to <span class="inline-code">''</span> instead of appending</li>
+        <li>The <span class="inline-code">txts</span> namespace is the only one that exists at context creation &mdash; all other namespaces are created lazily</li>
+      </ul>
+    </div>
+
+    <h2>How Builtins Are Read-Only</h2>
+    <div class="dev-section">
+      <p>The executor enforces that only <span class="inline-code">txts.OUTPUT</span> is writable in the <span class="inline-code">txts</span> library:</p>
+      <div class="code-block">
+        <span class="kw">if</span> (target.library === builtins.TXTS_LIBRARY_NAME &amp;&amp;<br>
+        &nbsp;&nbsp;&nbsp;&nbsp;target.name !== builtins.OUTPUT_VARIABLE_NAME) {<br>
+        &nbsp;&nbsp;<span class="kw">throw</span> <span class="kw">new</span> Error(<span class="str">'Cannot assign to "txts...."'</span>);<br>
+        }
+      </div>
+      <p>This guard is in <span class="inline-code">executeVariable</span> and fires before any assignment is attempted.</p>
+    </div>
+
+    <div class="pager">
+      <a href="dev-resolver.html">&laquo; Resolver</a>
+      <a href="dev-executor.html" class="next">Next: Executor &raquo;</a>
+    </div>
+    <div class="footer">txts Language Documentation</div>
+  </main>
+</body>
+</html>

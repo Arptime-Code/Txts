@@ -1,0 +1,109 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>txts - Resolver</title>
+  <link rel="stylesheet" href="style.css">
+</head>
+<body>
+  <header class="top-header">
+    <a href="index.html" class="logo">txts<span>docs</span></a>
+    <div class="nav-links">
+      <a href="index.html">Home</a>
+      <a href="examples.html">Examples</a>
+      <a href="developer.html">Dev Docs</a>
+    </div>
+  </header>
+  <nav class="sidebar">
+    <div class="sidebar-section">
+      <div class="sidebar-section-title">Tutorial</div>
+      <a href="index.html">Home</a>
+      <a href="getting-started.html">Getting Started</a>
+      <a href="syntax.html">Basic Syntax</a>
+      <a href="variables.html">Variables &amp; OUTPUT</a>
+      <a href="imports.html">IMPORT &amp; Libraries</a>
+      <a href="calls.html">CALL &amp; Functions</a>
+      <a href="txts-library.html">The txts Library</a>
+      <a href="project-structure.html">Project Structure</a>
+      <a href="txtspm.html">Package Manager</a>
+      <a href="examples.html">Examples</a>
+    </div>
+    <div class="sidebar-section">
+      <div class="sidebar-section-title">Reference</div>
+      <a href="developer.html">Dev Docs Home</a>
+      <a href="dev-cli.html">CLI &amp; Entry Point</a>
+      <a href="dev-helpers.html">Helpers</a>
+      <a href="dev-parser.html">Parser</a>
+      <a href="dev-resolver.html" class="active">Resolver</a>
+      <a href="dev-builtins.html">Builtins</a>
+      <a href="dev-executor.html">Executor</a>
+      <a href="dev-txtspm.html">txtspm Extension</a>
+      <a href="dev-repl.html">REPL</a>
+      <a href="dev-errors.html">Error Handling</a>
+    </div>
+  </nav>
+  <main class="main-content">
+    <h1>Resolver (general/resolver.js)</h1>
+    <p>The resolver handles filesystem navigation for finding libraries and functions. It maps logical names (<span class="inline-code">lib</span>, <span class="inline-code">external</span>) to filesystem paths.</p>
+
+    <h2>Project Root Discovery</h2>
+    <div class="dev-section">
+      <p><span class="inline-code">findProjectRoot(startPath)</span> is intentionally simple:</p>
+      <div class="code-block">
+        <span class="kw">function</span> findProjectRoot(startPath) {<br>
+        &nbsp;&nbsp;<span class="kw">return</span> path.resolve(startPath);<br>
+        }
+      </div>
+      <p>It just resolves the starting path to an absolute path. No walking up, no config file lookup. The project root is simply the directory containing the <span class="inline-code">.txts</span> file being run (or <span class="inline-code">process.cwd()</span> for extensions).</p>
+      <div class="info-box tip">
+        <strong>Note:</strong> Previously this function walked up looking for <span class="inline-code">package.json</span> or <span class="inline-code">.local-txtspm/</span>. Now it's a direct resolve &mdash; no config files required.
+      </div>
+    </div>
+
+    <h2>Library Resolution</h2>
+    <div class="dev-section">
+      <p><span class="inline-code">resolveLibraryPath(libraryName, projectRoot)</span> checks for a matching directory:</p>
+      <div class="code-block">
+        projectRoot + <span class="str">'/.local-txtspm/'</span> + libraryName
+      </div>
+      <p>If the directory exists, it returns the path. Otherwise <span class="inline-code">null</span>.</p>
+    </div>
+
+    <h2>Function Resolution</h2>
+    <div class="dev-section">
+      <p><span class="inline-code">resolveFunctionPath(libraryName, functionName, projectRoot)</span> resolves a specific function file:</p>
+      <div class="code-block">
+        libraryPath + <span class="str">'/'</span> + functionName + <span class="str">'.txts'</span>
+      </div>
+      <p>For example, <span class="inline-code">CALL lib.sayhello</span> looks for <span class="inline-code">.local-txtspm/lib/sayhello.txts</span>.</p>
+      <p>Returns the full file path if it exists, or <span class="inline-code">null</span> if the file doesn't exist.</p>
+    </div>
+
+    <h2>Library Function Listing</h2>
+    <div class="dev-section">
+      <table>
+        <tr><th>Function</th><th>Description</th></tr>
+        <tr><td><span class="inline-code">getLibraryFunctions(libraryPath)</span></td><td>Returns function names (without <span class="inline-code">.txts</span>) in a library directory</td></tr>
+        <tr><td><span class="inline-code">getLibraryFunctionPaths(libraryPath)</span></td><td>Returns full file paths of all <span class="inline-code">.txts</span> files in a library directory</td></tr>
+      </table>
+      <p>Both use <span class="inline-code">helpers.listTxtsFiles*</span> under the hood. Currently these are not used during execution (since <span class="inline-code">IMPORT</span> no longer auto-executes files), but they remain available for the txtspm extension and future use.</p>
+    </div>
+
+    <h2>Self-Import Detection</h2>
+    <div class="dev-section">
+      <p><span class="inline-code">isSelfImport(libraryName, projectRoot)</span> checks if the library name matches the project's directory name:</p>
+      <div class="code-block">
+        <span class="kw">return</span> libraryName === path.basename(projectRoot);
+      </div>
+      <p>This was used for the old "suite" convention where a project could import itself. Currently retained for compatibility.</p>
+    </div>
+
+    <div class="pager">
+      <a href="dev-parser.html">&laquo; Parser</a>
+      <a href="dev-builtins.html" class="next">Next: Builtins &raquo;</a>
+    </div>
+    <div class="footer">txts Language Documentation</div>
+  </main>
+</body>
+</html>

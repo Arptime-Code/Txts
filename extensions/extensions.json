@@ -1,0 +1,7 @@
+{
+  "txtspm": {
+    "name": "txtspm",
+    "description": "txts package manager",
+    "path": "txtspm/index.js"
+  }
+}

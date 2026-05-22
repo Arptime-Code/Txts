@@ -1,0 +1,105 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>txts - CLI &amp; Entry Point</title>
+  <link rel="stylesheet" href="style.css">
+</head>
+<body>
+  <header class="top-header">
+    <a href="index.html" class="logo">txts<span>docs</span></a>
+    <div class="nav-links">
+      <a href="index.html">Home</a>
+      <a href="examples.html">Examples</a>
+      <a href="developer.html">Dev Docs</a>
+    </div>
+  </header>
+  <nav class="sidebar">
+    <div class="sidebar-section">
+      <div class="sidebar-section-title">Tutorial</div>
+      <a href="index.html">Home</a>
+      <a href="getting-started.html">Getting Started</a>
+      <a href="syntax.html">Basic Syntax</a>
+      <a href="variables.html">Variables &amp; OUTPUT</a>
+      <a href="imports.html">IMPORT &amp; Libraries</a>
+      <a href="calls.html">CALL &amp; Functions</a>
+      <a href="txts-library.html">The txts Library</a>
+      <a href="project-structure.html">Project Structure</a>
+      <a href="txtspm.html">Package Manager</a>
+      <a href="examples.html">Examples</a>
+    </div>
+    <div class="sidebar-section">
+      <div class="sidebar-section-title">Reference</div>
+      <a href="developer.html">Dev Docs Home</a>
+      <a href="dev-cli.html" class="active">CLI &amp; Entry Point</a>
+      <a href="dev-helpers.html">Helpers</a>
+      <a href="dev-parser.html">Parser</a>
+      <a href="dev-resolver.html">Resolver</a>
+      <a href="dev-builtins.html">Builtins</a>
+      <a href="dev-executor.html">Executor</a>
+      <a href="dev-txtspm.html">txtspm Extension</a>
+      <a href="dev-repl.html">REPL</a>
+      <a href="dev-errors.html">Error Handling</a>
+    </div>
+  </nav>
+  <main class="main-content">
+    <h1>CLI &amp; Entry Point</h1>
+    <p>This page covers the interpreter's entry point and CLI handler &mdash; how a <span class="inline-code">.txts</span> file gets from the command line into the execution pipeline.</p>
+
+    <h2>Entry Point (general/index.js)</h2>
+    <div class="dev-section">
+      <p><span class="inline-code">general/index.js</span> is the application entry. It takes CLI arguments and passes them to the CLI handler:</p>
+      <div class="code-block">
+        <span class="kw">var</span> cli = <span class="kw">require</span>(<span class="str">'./cli'</span>);<br>
+        <span class="kw">var</span> args = process.argv.slice(<span class="num">2</span>);<br>
+        cli.run(args);
+      </div>
+    </div>
+
+    <h2>CLI Handler (general/cli.js)</h2>
+    <div class="dev-section">
+      <p>The CLI handler parses command-line arguments and dispatches to the correct handler.</p>
+
+      <h3>Key Functions</h3>
+      <table>
+        <tr><th>Function</th><th>Description</th></tr>
+        <tr><td><span class="inline-code">run(args)</span></td><td>Main dispatch. Routes to <span class="inline-code">handleRun</span> or <span class="inline-code">handleExtension</span></td></tr>
+        <tr><td><span class="inline-code">handleRun(args)</span></td><td>Validates file path and extension, calls <span class="inline-code">executor.runProgram</span></td></tr>
+        <tr><td><span class="inline-code">handleExtension(args)</span></td><td>Handles extension install and execution</td></tr>
+        <tr><td><span class="inline-code">printHelp()</span></td><td>Prints usage information to stderr</td></tr>
+      </table>
+
+      <h3>Dispatch Logic</h3>
+      <p>The <span class="inline-code">run(args)</span> function checks if the first argument starts with <span class="inline-code">--</span> (extension flag) or is a file path:</p>
+      <div class="code-block">
+        <span class="kw">if</span> (args[<span class="num">0</span>] &amp;&amp; args[<span class="num">0</span>].startsWith(<span class="str">'--'</span>)) {<br>
+        &nbsp;&nbsp;handleExtension(args);<br>
+        } <span class="kw">else</span> {<br>
+        &nbsp;&nbsp;handleRun(args);<br>
+        }
+      </div>
+
+      <h3>File Validation</h3>
+      <p><span class="inline-code">handleRun</span> validates the input before executing:</p>
+      <ul>
+        <li>Checks that a file path was provided (prints help if not)</li>
+        <li>Checks that the file has a <span class="inline-code">.txts</span> extension</li>
+        <li>Checks that the file exists on disk</li>
+        <li>Determines output target: stdout (no second arg) or a file (second arg provided)</li>
+        <li>Calls <span class="inline-code">executor.runProgram(filePath, outputTarget)</span></li>
+      </ul>
+
+      <h3>Extension Management</h3>
+      <p>Extensions are stored in <span class="inline-code">~/.txts/extensions/extensions.json</span>. Each extension has a name, description, and path. The built-in <span class="inline-code">txtspm</span> extension is bundled with the interpreter.</p>
+      <p>Install flow: <span class="inline-code">handleInstallExtension</span> adds the extension to the config JSON. Run flow: <span class="inline-code">handleRunExtension</span> requires the module and calls its <span class="inline-code">start()</span> function.</p>
+    </div>
+
+    <div class="pager">
+      <a href="developer.html">&laquo; Dev Docs Home</a>
+      <a href="dev-helpers.html" class="next">Next: Helpers &raquo;</a>
+    </div>
+    <div class="footer">txts Language Documentation</div>
+  </main>
+</body>
+</html>

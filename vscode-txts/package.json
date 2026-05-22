@@ -1,0 +1,36 @@
+{
+  "name": "txts-language",
+  "displayName": "txts Language Support",
+  "description": "Syntax highlighting for .txts programming language files",
+  "version": "0.1.0",
+  "publisher": "txts-lang",
+  "license": "MIT",
+  "engines": {
+    "vscode": "^1.60.0"
+  },
+  "categories": [
+    "Programming Languages"
+  ],
+  "contributes": {
+    "languages": [
+      {
+        "id": "txts",
+        "aliases": [
+          "txts",
+          "txts language",
+          "textscript"
+        ],
+        "extensions": [
+          ".txts"
+        ],
+        "configuration": "./language-configuration.json"
+      }
+    ],
+    "grammars": [
+      {
+        "language": "txts",
+        "scopeName": "source.txts",
+        "path": "./syntaxes/txts.tmLanguage.json"
+      }
+    ]  }
+}
