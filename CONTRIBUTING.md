@@ -35,7 +35,7 @@ Be respectful, constructive, and inclusive. We're all here to make Txts better.
 
 ### Reporting Bugs
 
-Open a [Bug Report](https://github.com/Arptime-Code/Txts/issues/new?template=bug_report.txt) on GitHub Issues. Include:
+Open a [Bug Report](https://github.com/Arptime-Code/Txts/issues/new) on GitHub Issues. Include:
 
 - What you expected to happen
 - What actually happened
@@ -45,7 +45,7 @@ Open a [Bug Report](https://github.com/Arptime-Code/Txts/issues/new?template=bug
 
 ### Suggesting Features
 
-Open a [Feature Request](https://github.com/Arptime-Code/Txts/issues/new?template=feature_request.txt) on GitHub Issues. Include:
+Open a [Feature Request](https://github.com/Arptime-Code/Txts/issues/new) on GitHub Issues. Include:
 
 - What problem you're trying to solve
 - How you imagine the feature working
