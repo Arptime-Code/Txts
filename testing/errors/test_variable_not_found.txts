@@ -1,0 +1,3 @@
+IMPORT lib
+IMPORT txts
+VARIABLE txts.OUTPUT lib.nonexistent
