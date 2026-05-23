@@ -86,7 +86,7 @@
     </div>
 
     <h2>Per-File Imports</h2>
-    <p>Each <span class="inline-code">.txts</span> file must import every library it uses. Imports do <strong>not</strong> carry over from one file to another. This is by design &mdash; every file is self-documenting about its dependencies.</p>
+    <p>Each <span class="inline-code">.txts</span> file must import every library it uses. Imports do <strong>not</strong> carry over from one file to another. This is by design &mdash; every file explicitly declares its dependencies at the top.</p>
     <div class="code-block">
       <span class="cmt"># main.txts<br></span>
       <span class="kw">IMPORT</span> <span class="lib">txts</span><br>

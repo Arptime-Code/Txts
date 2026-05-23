@@ -1,6 +1,6 @@
 # txts
 
-> **A minimalist programming language where folders are libraries and files are functions.**
+> **A text assembler and manager. Folders are libraries, files are functions.**
 
 [![npm version](https://img.shields.io/npm/v/txts?color=blue)](https://www.npmjs.com/package/txts)
 [![License](https://img.shields.io/badge/license-Apache%202.0-blue)](LICENSE)
@@ -44,8 +44,9 @@ node bin/txts hello.txts
 
 - **Only 3 commands** &mdash; `IMPORT`, `CALL`, `VARIABLE`. That's it.
 - **Library-based** &mdash; Code is organized into libraries with simple dot notation (`lib.function`).
-- **Self-documenting** &mdash; Non-command lines are treated as comments, so every file is also plain-text documentation.
-- **No build step** &mdash; Run `.txts` files directly with Node.js.
+- **Synchronous** &mdash; Predictable, sequential execution. No async, no parallelism.
+- **Reliability through composition** &mdash; Many small, carefully-crafted libraries compose into reliable systems.
+- **Delegates logic** &mdash; The actual computation happens in other languages; txts assembles and coordinates.
 - **Built-in package manager** &mdash; Share and reuse code with `txtspm`.
 
 ---

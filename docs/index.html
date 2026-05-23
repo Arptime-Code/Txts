@@ -58,9 +58,10 @@
   <main class="main-content">
     <h1>txts Language Tutorial</h1>
     <p>
-      <strong>txts</strong> is a minimalist programming language designed for simplicity and clarity.
-      Every line is a single command &mdash; no complex expressions, no nested syntax &mdash; just
-      plain-text instructions that are easy to read and write.
+      <strong>txts</strong> is a minimalist, synchronous programming language &mdash; a <strong>text assembler
+      and manager</strong>. Every line is a single command &mdash; no complex expressions, no nested syntax &mdash; just
+      plain-text instructions that let you assemble output from many small, focused libraries.
+      The real logic is handled by other languages; txts coordinates and connects the pieces.
     </p>
 
     <div class="info-box tip">
@@ -72,8 +73,9 @@
     <ul>
       <li><strong>Minimal syntax</strong> &mdash; Only three commands: <span class="inline-code">IMPORT</span>, <span class="inline-code">CALL</span>, <span class="inline-code">VARIABLE</span></li>
       <li><strong>Library-based</strong> &mdash; Code is organized into libraries with dot-notation references</li>
-      <li><strong>Self-documenting</strong> &mdash; Non-command lines are treated as comments</li>
-      <li><strong>No build step</strong> &mdash; Run <span class="inline-code">.txts</span> files directly with Node.js</li>
+      <li><strong>Synchronous</strong> &mdash; Predictable, sequential execution &mdash; no async or parallelism</li>
+      <li><strong>Reliability through composition</strong> &mdash; Many small, well-crafted libraries compose into dependable systems</li>
+      <li><strong>Delegates logic</strong> &mdash; Heavy computation happens in other languages; txts assembles and manages the results</li>
       <li><strong>Built-in package manager</strong> &mdash; Share and reuse code with txtspm</li>
     </ul>
 
@@ -117,7 +119,7 @@
     <h2>Resources</h2>
     <ul>
       <li><a href="faq.html">FAQ</a> &mdash; Frequently asked questions about txts</li>
-      <li><a href="installation.html">Installation Guide</a> &mdash; Install from source, npm, or VS Code extension</li>
+      <li><a href="installation.html">Installation Guide</a> &mdash; Install txts via npm</li>
     </ul>
 
     <h2>Reference</h2>
