@@ -13,7 +13,7 @@
 > **Note:** Not yet published to npm. Clone the repo and run from source for now.
 
 ```bash
-git clone https://github.com/arptime/Txts.git
+git clone https://github.com/Arptime-Code/Txts.git
 cd Txts
 
 cat > hello.txts << 'EOF'
@@ -132,7 +132,7 @@ npm install -g txts
 ### From source
 
 ```bash
-git clone https://github.com/arptime/Txts.git
+git clone https://github.com/Arptime-Code/Txts.git
 cd Txts
 npm link
 ```
@@ -268,4 +268,4 @@ Contributions are welcome! See the [Branching & Merging Strategy](ROADMAP.md#-br
 
 ## License
 
-[Apache 2.0](LICENSE) &copy; 2026 arptime
+[Apache 2.0](LICENSE) &copy; 2026 Arptime-Code
