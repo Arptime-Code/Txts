@@ -40,7 +40,6 @@ txts hello.txts
 - [Usage](#usage)
 - [Full Documentation](#full-documentation)
 - [Examples](#examples)
-- [Contributing](#contributing)
 - [License](#license)
 
 ---
@@ -264,17 +263,6 @@ Output: `Fresh start`
 
 ---
 
-## Contributing
-
-Contributions are welcome! See the [Branching & Merging Strategy](ROADMAP.md#-branching--merging-strategy) in the roadmap for the workflow.
-
-1. Fork the repository
-2. Create a feature branch from `dev`: `git checkout -b feat/my-feature`
-3. Make your changes
-4. Run the tests: `npm test`
-5. Open a pull request against `dev`
-
----
 
 ## Transparency
 
