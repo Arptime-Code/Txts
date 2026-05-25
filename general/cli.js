@@ -66,6 +66,11 @@ function run(args) {
     return;
   }
 
+  if (firstArg === 'repl') {
+    handleRepl();
+    return;
+  }
+
   handleRun(args);
 }
 
@@ -77,6 +82,7 @@ function printHelp() {
     '  txts <file.txts> [output.txt]    Run a txts program',
     '  txts extension install <name>     Install an extension',
     '  txts extension <name>             Run an extension',
+    '  txts repl                          Start the interactive REPL',
     '  txts --help, -h                   Show this help message',
     '  txts --version, -v                Print version',
     '',
@@ -111,6 +117,11 @@ function handleRun(args) {
     console.error('Error: ' + err.message);
     process.exit(1);
   }
+}
+
+function handleRepl() {
+  var repl = require('./repl');
+  repl.startRepl();
 }
 
 function handleExtension(args) {
