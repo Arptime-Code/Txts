@@ -200,8 +200,12 @@ Comprehensive documentation is available in the [`docs/`](docs/) directory:
 | [CALL & Functions](docs/calls.html) | Executing library functions |
 | [The txts Library](docs/txts-library.html) | Built-in variables and sentinels |
 | [Project Structure](docs/project-structure.html) | Organizing your code |
+| [REPL Mode](docs/repl.html) | Interactive txts session |
 | [Package Manager](docs/txtspm.html) | Sharing code with txtspm |
 | [Examples](docs/examples.html) | Complete working programs |
+
+The documentation is also available online at:
+**[https://arptime-code.github.io/Txts/](https://arptime-code.github.io/Txts/)**
 
 ### Developer Reference
 
