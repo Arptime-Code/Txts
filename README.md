@@ -13,15 +13,20 @@
 > **Note:** Not yet published to npm. Clone the repo and run from source for now.
 
 ```bash
-git clone https://github.com/Arptime-Code/Txts.git
-cd Txts
+npm install -g txts
+```
 
-cat > hello.txts << 'EOF'
+Create a file called `hello.txts`:
+
+```txts
 IMPORT txts
 VARIABLE txts.OUTPUT "Hello, world!"
-EOF
+```
 
-node bin/txts hello.txts
+Then run it:
+
+```bash
+txts hello.txts
 # Output: Hello, world!
 ```
 
@@ -270,6 +275,10 @@ Contributions are welcome! See the [Branching & Merging Strategy](ROADMAP.md#-br
 5. Open a pull request against `dev`
 
 ---
+
+## Transparency
+
+See [AI_DISCLOSURE.md](AI_DISCLOSURE.md) for details on how AI was used in this project.
 
 ## License
 
