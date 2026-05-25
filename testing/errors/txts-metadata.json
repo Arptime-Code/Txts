@@ -1,0 +1,42 @@
+{
+  "Title": "errors",
+  "Description": "",
+  "Keywords": [],
+  "Version": "0.0.0",
+  "Variation": "",
+  "Functions": [
+    {
+      "Name": "test_call_without_import",
+      "Description": ""
+    },
+    {
+      "Name": "test_function_not_found",
+      "Description": ""
+    },
+    {
+      "Name": "test_read_unimported",
+      "Description": ""
+    },
+    {
+      "Name": "test_recursion_limit",
+      "Description": ""
+    },
+    {
+      "Name": "test_variable_not_found",
+      "Description": ""
+    },
+    {
+      "Name": "test_write_txts_readonly",
+      "Description": ""
+    },
+    {
+      "Name": "test_write_unimported",
+      "Description": ""
+    }
+  ],
+  "Type": "program",
+  "Dependencies": [
+    "lib",
+    "recurse"
+  ]
+}

@@ -1,0 +1,38 @@
+{
+  "Title": "suite",
+  "Description": "",
+  "Keywords": [],
+  "Version": "0.0.0",
+  "Variation": "",
+  "Functions": [
+    {
+      "Name": "test_call",
+      "Description": ""
+    },
+    {
+      "Name": "test_chain",
+      "Description": ""
+    },
+    {
+      "Name": "test_clear",
+      "Description": ""
+    },
+    {
+      "Name": "test_external_call",
+      "Description": ""
+    },
+    {
+      "Name": "test_external_import",
+      "Description": ""
+    },
+    {
+      "Name": "test_import",
+      "Description": ""
+    }
+  ],
+  "Type": "program",
+  "Dependencies": [
+    "lib",
+    "external"
+  ]
+}
