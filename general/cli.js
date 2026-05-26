@@ -49,6 +49,19 @@ function run(args) {
     return;
   }
 
+  // Check for --raw flag first (can appear anywhere)
+  var rawIndex = args.indexOf('--raw');
+
+  if (rawIndex !== -1) {
+    helpers.setStringMode('raw');
+    args.splice(rawIndex, 1);
+  }
+
+  if (args.length === 0) {
+    printHelp();
+    return;
+  }
+
   var firstArg = args[0];
 
   if (firstArg === '--help' || firstArg === '-h') {
@@ -83,6 +96,7 @@ function printHelp() {
     '  txts extension install <name>     Install an extension',
     '  txts extension <name>             Run an extension',
     '  txts repl                          Start the interactive REPL',
+    '  txts --raw <file.txts>             Run with raw string mode (no escape sequences)',
     '  txts --help, -h                   Show this help message',
     '  txts --version, -v                Print version',
     '',

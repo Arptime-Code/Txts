@@ -4,6 +4,7 @@ var parser = require('./parser');
 var executor = require('./executor');
 var resolver = require('./resolver');
 var builtins = require('./builtins');
+var helpers = require('./helpers');
 
 // === CONSTANTS ===
 
@@ -26,7 +27,7 @@ function startRepl() {
   var version = getVersion();
   console.log('txts REPL v' + version + ' — Type txts commands interactively.');
   console.log('  Commands: IMPORT  CALL  VARIABLE');
-  console.log('  Meta:     .help  .clear  .vars  .reset  exit');
+  console.log('  Meta:     .help  .clear  .vars  .reset  .mode  exit');
   console.log('');
   rl.prompt();
 
@@ -131,6 +132,20 @@ function handleMetaCommand(line, context) {
       console.log('(context reset to clean state)');
       break;
 
+    case '.mode':
+      if (parts[1] === 'raw') {
+        helpers.setStringMode('raw');
+        console.log('(string mode set to raw — escape sequences are literal)');
+      } else if (parts[1] === 'parsed') {
+        helpers.setStringMode('parsed');
+        console.log('(string mode set to parsed — escape sequences are interpreted)');
+      } else {
+        console.log('Current string mode: ' + helpers.getStringMode());
+        console.log('Usage: .mode raw   — escape sequences like \\t stay literal');
+        console.log('       .mode parsed — escape sequences like \\t become actual tab');
+      }
+      break;
+
     default:
       console.log('Unknown meta-command "' + cmd + '". Type .help for available commands.');
       break;
@@ -143,6 +158,7 @@ function printMetaHelp() {
   console.log('  .clear             Clear txts.OUTPUT');
   console.log('  .vars              Show all variables and their values');
   console.log('  .reset             Reset the execution context to a clean state');
+  console.log('  .mode [raw|parsed] Show or set string escape mode');
   console.log('  exit, quit, q      Exit the REPL');
   console.log('');
   console.log('txts commands:');

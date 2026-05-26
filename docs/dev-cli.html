@@ -78,12 +78,37 @@
         <tr><td><span class="inline-code">printHelp()</span></td><td>Prints usage information including version, flags, and extension list</td></tr>
       </table>
 
+      <h3>String Mode &amp; the <span class="inline-code">--raw</span> Flag</h3>
+      <p>
+        By default, txts interprets escape sequences in string literals (<span class="inline-code">\n</span> → newline,
+        <span class="inline-code">\t</span> → tab, etc.) using JSON-style parsing. This is called
+        <strong>parsed mode</strong>. To disable escape sequence interpretation, pass
+        <span class="inline-code">--raw</span>:
+      </p>
+      <div class="code-block">
+        txts file.txts              <span class="cmt"># parsed mode (default) — \n becomes newline</span><br>
+        txts --raw file.txts        <span class="cmt"># raw mode — \n stays as \\n</span><br>
+        txts --raw repl             <span class="cmt"># REPL in raw mode</span>
+      </div>
+      <p>
+        The <span class="inline-code">--raw</span> flag can appear anywhere in the argument list, and
+        works for both file execution and REPL mode. It sets a global string mode on the
+        <span class="inline-code">helpers</span> module via <span class="inline-code">setStringMode()</span>.
+      </p>
+
       <h3>Dispatch Logic</h3>
-      <p>The <span class="inline-code">run(args)</span> function checks for built-in flags first, then dispatches:</p>
+      <p>The <span class="inline-code">run(args)</span> function checks for <span class="inline-code">--raw</span> first, then checks built-in flags, then dispatches:</p>
       <div class="code-block">
         <span class="kw">if</span> (args.length === <span class="num">0</span>) {<br>
         &nbsp;&nbsp;printHelp();<br>
         &nbsp;&nbsp;<span class="kw">return</span>;<br>
+        }<br>
+        <br>
+        <span class="cmt">// --raw can appear anywhere</span><br>
+        <span class="kw">var</span> rawIndex = args.indexOf(<span class="str">'--raw'</span>);<br>
+        <span class="kw">if</span> (rawIndex !== -1) {<br>
+        &nbsp;&nbsp;helpers.setStringMode('raw');<br>
+        &nbsp;&nbsp;args.splice(rawIndex, 1);<br>
         }<br>
         <br>
         <span class="kw">if</span> (firstArg === <span class="str">'--help'</span> || firstArg === <span class="str">'-h'</span>) {<br>

@@ -103,6 +103,20 @@ function isDirectoryEmpty(dirPath) {
   return fs.readdirSync(dirPath).length === 0;
 }
 
+// === STRING MODE ===
+
+var stringMode = 'parsed';
+
+function setStringMode(mode) {
+  if (mode === 'raw' || mode === 'parsed') {
+    stringMode = mode;
+  }
+}
+
+function getStringMode() {
+  return stringMode;
+}
+
 // === STRING PARSING ===
 
 function isQuotedString(str) {
@@ -111,7 +125,17 @@ function isQuotedString(str) {
 
 function stripQuotes(str) {
   if (str.length >= 2 && str[0] === '"' && str[str.length - 1] === '"') {
-    return str.slice(1, -1);
+    var inner = str.slice(1, -1);
+
+    if (stringMode === 'parsed') {
+      try {
+        return JSON.parse('"' + inner + '"');
+      } catch (e) {
+        return inner;
+      }
+    }
+
+    return inner;
   }
 
   return str;
@@ -156,6 +180,8 @@ module.exports = {
   isDirectoryEmpty: isDirectoryEmpty,
   isQuotedString: isQuotedString,
   stripQuotes: stripQuotes,
+  setStringMode: setStringMode,
+  getStringMode: getStringMode,
   parseDottedReference: parseDottedReference,
   getHomeDir: getHomeDir,
   getProjectName: getProjectName

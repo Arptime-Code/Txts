@@ -68,11 +68,39 @@
     <div class="code-block">
       txts REPL v0.1.0 — Type txts commands interactively.<br>
       &nbsp;&nbsp;Commands: IMPORT  CALL  VARIABLE<br>
-      &nbsp;&nbsp;Meta:     .help  exit<br>
+      &nbsp;&nbsp;Meta:     .help  .clear  .vars  .reset  .mode  exit<br>
       <br>
       txts&gt;
     </div>
     <p>The <span class="inline-code">txts&gt;</span> prompt means the REPL is ready for your input.</p>
+
+    <h2>String Escape Sequences</h2>
+    <p>
+      By default, txts interprets escape sequences in string literals &mdash;
+      <span class="inline-code">\n</span> becomes a newline, <span class="inline-code">\t</span> becomes
+      a tab, <span class="inline-code">\\</span> becomes a backslash, and so on. This uses the same
+      escape syntax as JSON, so all standard JSON escape sequences are supported:
+    </p>
+    <table>
+      <tr><th>Sequence</th><th>Result</th></tr>
+      <tr><td><span class="inline-code">\n</span></td><td>Newline</td></tr>
+      <tr><td><span class="inline-code">\t</span></td><td>Tab</td></tr>
+      <tr><td><span class="inline-code">\\</span></td><td>Backslash</td></tr>
+      <tr><td><span class="inline-code">\"</span></td><td>Double quote</td></tr>
+      <tr><td><span class="inline-code">\r</span></td><td>Carriage return</td></tr>
+      <tr><td><span class="inline-code">\uXXXX</span></td><td>Unicode character (e.g. <span class="inline-code">\u00e9</span> for é)</td></tr>
+    </table>
+    <p>
+      If you need the literal characters (e.g. you want to print <span class="inline-code">\t</span>
+      as two characters and not a tab), use the <span class="inline-code">--raw</span> flag when
+      starting the REPL:
+    </p>
+    <div class="code-block">
+      node bin/txts --raw repl
+    </div>
+    <p>
+      In raw mode, no escape sequences are interpreted &mdash; strings are used exactly as written.
+    </p>
 
     <h2>Using the REPL</h2>
     <p>Type any valid txts command at the prompt. The REPL maintains a persistent context &mdash; variables
@@ -124,6 +152,10 @@
       <tr>
         <td><span class="inline-code">.reset</span></td>
         <td>Reset the entire execution context to a clean state &mdash; clears all variables and imports</td>
+      </tr>
+      <tr>
+        <td><span class="inline-code">.mode [raw|parsed]</span></td>
+        <td>Show or set the string escape mode &mdash; <span class="inline-code">raw</span> keeps escape sequences literal, <span class="inline-code">parsed</span> interprets them</td>
       </tr>
       <tr>
         <td><span class="inline-code">exit</span>, <span class="inline-code">quit</span>, <span class="inline-code">q</span></td>
