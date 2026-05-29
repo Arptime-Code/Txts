@@ -1,0 +1,10 @@
+IMPORT txts
+IMPORT tmpTests2
+
+# ADD builds a chain left to right
+ADD tmpTests2.demo "one"
+ADD tmpTests2.demo "two"
+ADD tmpTests2.demo "three"
+
+# OUTPUT collects the resolved chain
+ADD txts.OUTPUT tmpTests2.demo

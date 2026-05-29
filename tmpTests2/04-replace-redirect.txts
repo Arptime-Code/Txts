@@ -1,0 +1,27 @@
+IMPORT txts
+IMPORT tmpTests2
+
+# REPLACE with two vars = full redirect + delete target
+# Existing refs to old var get rerouted, old var deleted
+
+ADD tmpTests2.items "hello "
+ADD tmpTests2.items tmpTests2.codeVar
+
+# codeVar doesn't exist yet — forward ref stored
+ADD tmpTests2.codeVar "world"
+ADD txts.OUTPUT tmpTests2.items
+
+ADD txts.OUTPUT " | "
+
+# REPLACE redirects all refs from codeVar to newCodeVar
+# codeVar is also deleted
+REPLACE tmpTests2.codeVar tmpTests2.newCodeVar
+
+ADD tmpTests2.newCodeVar "there"
+ADD txts.OUTPUT tmpTests2.items
+
+ADD txts.OUTPUT " | "
+
+# New ref to deleted codeVar — dead ref, adds nothing
+ADD tmpTests2.items tmpTests2.codeVar
+ADD txts.OUTPUT tmpTests2.items

@@ -1,0 +1,19 @@
+IMPORT txts
+IMPORT tmpTests2
+
+# ADD copies source's chain items into target (snapshot)
+# Changing source later doesn't affect target
+
+# Build source's chain
+ADD tmpTests2.source "A"
+ADD tmpTests2.source "B"
+
+# ADD copies source's items into target
+ADD tmpTests2.target tmpTests2.source
+
+# Changing source now — target already has its own copy
+ADD tmpTests2.source "C"
+
+ADD txts.OUTPUT tmpTests2.source
+ADD txts.OUTPUT "-"
+ADD txts.OUTPUT tmpTests2.target

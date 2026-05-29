@@ -26,6 +26,18 @@ function resolveLibraryPath(libraryName, projectRoot) {
 }
 
 function resolveFunctionPath(libraryName, functionName, projectRoot) {
+  // Self-import: look directly in the project root
+  if (isSelfImport(libraryName, projectRoot)) {
+    var selfFnPath = path.join(projectRoot, functionName + helpers.TXTS_EXTENSION);
+
+    if (helpers.fileExists(selfFnPath)) {
+      return selfFnPath;
+    }
+
+    return null;
+  }
+
+  // External library: look in .local-txtspm/<libraryName>/
   var libPath = resolveLibraryPath(libraryName, projectRoot);
 
   if (!libPath) {

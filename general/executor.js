@@ -223,21 +223,43 @@ function executeAdd(command, context) {
     context.variables[target.library][target.name] = [{type: 'value', value: context.variables[target.library][target.name]}];
   }
 
-  // Append item to chain
-  var item = makeItem(source, context);
-  if (item) {
-    context.variables[target.library][target.name].push(item);
+  // Append item(s) to chain.
+  // For reference sources with an existing chain, copy its items
+  // (values and refs) into the target — a snapshot that preserves
+  // forward refs while being independent from the source variable.
+  // If the source doesn't exist yet, store a single forward ref.
+  if (source.type === 'reference') {
+    var srcVar = context.variables[source.library] && context.variables[source.library][source.name];
+    if (Array.isArray(srcVar)) {
+      // Source exists with a chain — copy its items
+      for (var j = 0; j < srcVar.length; j++) {
+        context.variables[target.library][target.name].push(srcVar[j]);
+      }
+    } else {
+      // Source doesn't exist or is a plain value — store single ref/value
+      var item = makeItem(source, context);
+      if (item) {
+        context.variables[target.library][target.name].push(item);
+      }
+    }
+  } else {
+    var item = makeItem(source, context);
+    if (item) {
+      context.variables[target.library][target.name].push(item);
+    }
   }
 }
 
 // === REPLACE (update a variable's definition) ===
 //
-// REPLACE var1 "text"   — replaces var1's chain with the string "text"
-// REPLACE var1 var2      — replaces var1's chain with a ref to var2.
-//                          Future ADD operations resolving var1 will follow the redirect.
+// REPLACE var1 "text"   — replaces var1's chain with the string "text".
+//                          No other variables are affected.
 //
-// Scans ALL variables' chains for any remaining refs to var1 (e.g. refs created
-// by previous REPLACE var1 var2 calls) and replaces them too.
+// REPLACE var1 var2      — replaces var1's chain with a ref to var2.
+//                          Also does a global substitution: all existing
+//                          {type:'ref'} items pointing to var1 are replaced
+//                          with refs to var2. This fully redirects var1 to var2
+//                          everywhere.
 
 function executeReplace(command, context) {
   var target = command.target;
@@ -263,7 +285,6 @@ function executeReplace(command, context) {
   // Create namespace if needed
   context.variables[target.library] = context.variables[target.library] || {};
 
-  // === REPLACE var1 source — GLOBAL substitution ===
   var source = sources[0];
 
   // Build the replacement item
@@ -280,51 +301,61 @@ function executeReplace(command, context) {
     replacementItem = { type: 'ref', library: source.library, name: source.name };
   }
 
-  // 1. Find ALL refs to target across every variable's chain, replace them
-  for (var libName in context.variables) {
-    if (context.variables.hasOwnProperty(libName)) {
-      var lib = context.variables[libName];
-      for (var varName in lib) {
-        if (lib.hasOwnProperty(varName)) {
-          var chain = lib[varName];
-          if (Array.isArray(chain)) {
-            for (var i = 0; i < chain.length; i++) {
-              if (chain[i].type === 'ref' &&
-                  chain[i].library === target.library &&
-                  chain[i].name === target.name) {
-                chain[i] = replacementItem;
+  // Replace target's own chain with just the replacement item
+  context.variables[target.library][target.name] = [replacementItem];
+
+  // Global substitution: when source is a reference, scan all chains for
+  // {type:'ref'} items pointing to the target and replace them with the
+  // new source ref. This fully redirects var1 → var2 everywhere.
+  //
+  // Additionally, delete the target variable itself. Any future
+  // references to it (created via ADD after this point) will be
+  // dead forward refs that resolve to empty string — they have
+  // nothing to do with the redirect.
+  //
+  // When source is a string (reset), no global scan — other chains that
+  // reference the target keep their refs and follow the redirect naturally.
+  //
+  // Only delete for ref-source replacements (redirects).
+  // String-source replacements (resets) keep the target alive.
+  if (source.type === 'reference') {
+    for (var libName in context.variables) {
+      if (context.variables.hasOwnProperty(libName)) {
+        var lib = context.variables[libName];
+        for (var varName in lib) {
+          if (lib.hasOwnProperty(varName)) {
+            var chain = lib[varName];
+            if (Array.isArray(chain)) {
+              for (var i = 0; i < chain.length; i++) {
+                if (chain[i].type === 'ref' &&
+                    chain[i].library === target.library &&
+                    chain[i].name === target.name) {
+                  chain[i] = replacementItem;
+                }
               }
             }
           }
         }
       }
     }
-  }
 
-  // 2. Replace target's own chain with just the replacement item
-  context.variables[target.library][target.name] = [replacementItem];
+    // Delete the target variable so new refs to it have nothing to do with the redirect
+    delete context.variables[target.library][target.name];
+  }
 }
 
 // === ITEM CREATION ===
 //
-// Hybrid approach:
-// - If the referenced variable already exists → resolve eagerly, store the value.
-// - If the referenced variable doesn't exist yet → store a lazy ref that will
-//   resolve when the variable is defined later (forward references).
+// Stores a string value or a single name-based ref.
+// For reference sources, always stores {type:'ref', library, name}
+// regardless of whether the variable exists yet. Resolution follows
+// through redirects naturally at resolve time.
 
 function makeItem(source, context) {
   if (source.type === 'string') {
     return { type: 'value', value: source.value };
   }
   if (source.type === 'reference') {
-    // Check if the source variable already exists
-    context.variables[source.library] = context.variables[source.library] || {};
-    if (context.variables[source.library][source.name] !== undefined) {
-      // Variable exists — resolve eagerly and store the value
-      var resolved = resolveReferenceSafe(context, source.library, source.name);
-      return { type: 'value', value: resolved };
-    }
-    // Variable doesn't exist yet — store a lazy ref for forward reference
     return { type: 'ref', library: source.library, name: source.name };
   }
   return null;

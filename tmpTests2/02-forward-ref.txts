@@ -1,0 +1,11 @@
+IMPORT txts
+IMPORT tmpTests2
+
+# ADD ref to var that doesn't exist yet (forward ref)
+ADD tmpTests2.result "hi "
+ADD tmpTests2.result tmpTests2.futureVar
+ADD tmpTests2.result "!"
+
+# Define the forward ref later — resolves when OUTPUT reads result
+ADD tmpTests2.futureVar "there"
+ADD txts.OUTPUT tmpTests2.result

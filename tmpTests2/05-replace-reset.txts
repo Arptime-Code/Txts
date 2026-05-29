@@ -1,0 +1,24 @@
+IMPORT txts
+IMPORT tmpTests2
+
+# REPLACE with a string = just reset the chain
+# Other vars that have refs to this var still work
+
+ADD tmpTests2.original "hello "
+ADD tmpTests2.original "world"
+
+# otherVar gets a snapshot of original's chain (chain-copy)
+ADD tmpTests2.otherVar tmpTests2.original
+
+ADD txts.OUTPUT tmpTests2.otherVar
+ADD txts.OUTPUT " | "
+
+# Reset original — replaces its chain with a single text item
+# No global substitution, no delete. otherVar untouched.
+REPLACE tmpTests2.original "reset"
+
+ADD txts.OUTPUT tmpTests2.original
+ADD txts.OUTPUT " | "
+
+# otherVar still has its snapshot copy
+ADD txts.OUTPUT tmpTests2.otherVar

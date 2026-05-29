@@ -37,7 +37,9 @@
       "title": "Resources",
       "pages": [
         { "id": "faq",             "label": "FAQ" },
-        { "id": "installation",    "label": "Installation" }
+        { "id": "installation",    "label": "Installation" },
+        { "id": "add-replace-deep-dive", "label": "ADD & REPLACE Deep Dive" },
+        { "id": "shopping-list-model", "label": "Shopping List Model" }
       ]
     }
   ]
