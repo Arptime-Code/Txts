@@ -15,7 +15,7 @@ var TESTS = {
   'test_write_unimported.txts':       'is not imported',
   'test_read_unimported.txts':        'Cannot read',
   'test_write_txts_readonly.txts':    'only "txts.OUTPUT" is writable',
-  'test_variable_not_found.txts':     'does not exist',
+  'test_variable_not_found.txts':     'REPLACE requires a source',
   'test_recursion_limit.txts':        'Recursion limit',
   'test_function_not_found.txts':     'not found in project root'
 };

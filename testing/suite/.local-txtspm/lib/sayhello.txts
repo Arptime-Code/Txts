@@ -1,2 +1,2 @@
 IMPORT txts
-VARIABLE txts.OUTPUT "Called function hello!"
+ADD txts.OUTPUT "Called function hello!"

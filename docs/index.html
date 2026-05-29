@@ -8,134 +8,20 @@
 </head>
 <body>
 
-  <!-- === HEADER === -->
-  <header class="top-header">
-    <a href="index.html" class="logo">txts<span>docs</span></a>
-    <div class="nav-links">
-      <a href="index.html">Home</a>
-      <a href="examples.html">Examples</a>
-      <a href="developer.html">Dev Docs</a>
-    </div>
-  </header>
+  <div id="app">
 
-  <!-- === SIDEBAR === -->
-  <nav class="sidebar">
-    <div class="sidebar-section">
-      <div class="sidebar-section-title">Tutorial</div>
-      <a href="index.html" class="active">Home</a>
-      <a href="getting-started.html">Getting Started</a>
-      <a href="syntax.html">Basic Syntax</a>
-      <a href="variables.html">Variables &amp; OUTPUT</a>
-      <a href="imports.html">IMPORT &amp; Libraries</a>
-      <a href="calls.html">CALL &amp; Functions</a>
-      <a href="txts-library.html">The txts Library</a>
-      <a href="project-structure.html">Project Structure</a>
-      <a href="repl.html">REPL Mode</a>
-      <a href="txtspm.html">Package Manager</a>
-      <a href="examples.html">Examples</a>
-    </div>
-    <div class="sidebar-section">
-      <div class="sidebar-section-title">Reference</div>
-      <a href="developer.html">Dev Docs Home</a>
-      <a href="dev-cli.html">CLI &amp; Entry Point</a>
-      <a href="dev-helpers.html">Helpers</a>
-      <a href="dev-parser.html">Parser</a>
-      <a href="dev-resolver.html">Resolver</a>
-      <a href="dev-builtins.html">Builtins</a>
-      <a href="dev-executor.html">Executor</a>
-      <a href="dev-txtspm.html">txtspm Extension</a>
-      <a href="dev-repl.html">REPL</a>
-      <a href="dev-errors.html">Error Handling</a>
-    </div>
-    <div class="sidebar-section">
-      <div class="sidebar-section-title">Resources</div>
-      <a href="faq.html">FAQ</a>
-      <a href="installation.html">Installation</a>
-    </div>
-  
-  </nav>
+    <!-- === HEADER === -->
+    <header class="top-header"></header>
 
-  <!-- === MAIN CONTENT === -->
-  <main class="main-content">
-    <h1>txts Language Tutorial</h1>
-    <p>
-      <strong>txts</strong> is a minimalist, synchronous programming language &mdash; a <strong>text assembler
-      and manager</strong>. Every line is a single command &mdash; no complex expressions, no nested syntax &mdash; just
-      plain-text instructions that let you assemble output from many small, focused libraries.
-      The real logic is handled by other languages; txts coordinates and connects the pieces.
-    </p>
+    <!-- === SIDEBAR === -->
+    <nav class="sidebar"></nav>
 
-    <div class="info-box tip">
-      <strong>New to txts?</strong> Start with <a href="getting-started.html">Getting Started</a>
-      to set up your environment and write your first program.
-    </div>
+    <!-- === MAIN CONTENT === -->
+    <main class="main-content" id="content-area"></main>
 
-    <h2>Why txts?</h2>
-    <ul>
-      <li><strong>Minimal syntax</strong> &mdash; Only three commands: <span class="inline-code">IMPORT</span>, <span class="inline-code">CALL</span>, <span class="inline-code">VARIABLE</span></li>
-      <li><strong>Library-based</strong> &mdash; Code is organized into libraries with dot-notation references</li>
-      <li><strong>Synchronous</strong> &mdash; Predictable, sequential execution &mdash; no async or parallelism</li>
-      <li><strong>Reliability through composition</strong> &mdash; Many small, well-crafted libraries compose into dependable systems</li>
-      <li><strong>Delegates logic</strong> &mdash; Heavy computation happens in other languages; txts assembles and manages the results</li>
-      <li><strong>Built-in package manager</strong> &mdash; Share and reuse code with txtspm</li>
-    </ul>
+  </div>
 
-    <h2>Quick Overview</h2>
-    <p>A txts program is a sequence of lines in a <span class="inline-code">.txts</span> file. Each line is either a command or a comment:</p>
-
-    <div class="code-block">
-      <span class="cmt"># This is a comment<br></span>
-      <br>
-      <span class="cmt"># Import libraries you need<br></span>
-      <span class="kw">IMPORT</span> <span class="lib">txts</span><br>
-      <span class="kw">IMPORT</span> <span class="lib">lib</span><br>
-      <br>
-      <span class="cmt"># Set the output<br></span>
-      <span class="kw">VARIABLE</span> <span class="lib">txts</span>.<span class="var">OUTPUT</span> <span class="str">"Hello, world!"</span>
-    </div>
-
-    <p>Run it with (from the Txts project root):</p>
-    <div class="code-block">
-      node bin/txts myfile.txts
-    </div>
-    <div class="info-box tip">
-      <strong>Note:</strong> You need to specify the path to the txts interpreter.
-      If your file is in a different project, use the full path:
-      <span class="inline-code">node /path/to/txts/bin/txts myfile.txts</span>
-    </div>
-
-    <h2>What You'll Learn</h2>
-    <ol>
-      <li><a href="getting-started.html">Getting Started</a> &mdash; Installation and first program</li>
-      <li><a href="syntax.html">Basic Syntax</a> &mdash; How to write txts code</li>
-      <li><a href="variables.html">Variables &amp; OUTPUT</a> &mdash; Storing and outputting values</li>
-      <li><a href="imports.html">IMPORT &amp; Libraries</a> &mdash; Using libraries and namespaces</li>
-      <li><a href="calls.html">CALL &amp; Functions</a> &mdash; Executing library functions</li>
-      <li><a href="txts-library.html">The txts Library</a> &mdash; Built-in variables and sentinels</li>
-      <li><a href="project-structure.html">Project Structure</a> &mdash; Organizing your code</li>
-      <li><a href="repl.html">REPL Mode</a> &mdash; Interactive txts session</li>
-      <li><a href="txtspm.html">Package Manager</a> &mdash; Sharing code with txtspm</li>
-      <li><a href="examples.html">Examples</a> &mdash; Complete working programs</li>
-    </ol>
-
-    <h2>Resources</h2>
-    <ul>
-      <li><a href="faq.html">FAQ</a> &mdash; Frequently asked questions about txts</li>
-      <li><a href="installation.html">Installation Guide</a> &mdash; Install txts via npm</li>
-    </ul>
-
-    <h2>Reference</h2>
-    <p>For a deep dive into the internals of txts, see the <a href="developer.html">Developer Documentation</a>.</p>
-
-    <div class="pager">
-      <span></span>
-      <a href="getting-started.html" class="next">Next &raquo;</a>
-    </div>
-
-    <div class="footer">
-      txts Language Documentation &mdash; Built with care
-    </div>
-  </main>
+  <script src="app.js"></script>
 
 </body>
 </html>

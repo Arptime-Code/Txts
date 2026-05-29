@@ -1,2 +1,2 @@
 IMPORT txts
-VARIABLE txts.OUTPUT other.x
+ADD txts.OUTPUT other.x

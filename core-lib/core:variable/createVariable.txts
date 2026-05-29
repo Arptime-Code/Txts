@@ -1,32 +1,28 @@
-IMPORT core-lib
-
-
+Basics
 IMPORT txts
+IMPORT core:variable
+
+
 
 Not needed to be modified
-VARIABLE core-lib.tabs "\t"
-VARIABLE core-lib.newlines "\n\n"
+ADD core:variable.tabs "\t"
+ADD core:variable.newlines "\n\n"
 
 Needed to be modified
-VARIABLE core-lib.name "output"
-VARIABLE core-lib.value "output2"
+ADD core:variable.name "output"
+ADD core:variable.value "output2"
 
 Constants
-VARIABLE core-lib.variableStart "let "
-VARIABLE core-lib.equal " = "
-VARIABLE core-lib.semicolon ";"
+ADD core:variable.variableStart "let "
+ADD core:variable.equal " = "
+ADD core:variable.semicolon ";"
 
 
 Logic
-VARIABLE txts.OUTPUT core-lib.tabs
-VARIABLE txts.OUTPUT core-lib.variableStart
-VARIABLE txts.OUTPUT core-lib.name
-VARIABLE txts.OUTPUT core-lib.equal
-VARIABLE txts.OUTPUT core-lib.value
-VARIABLE txts.OUTPUT core-lib.semicolon
-VARIABLE txts.OUTPUT core-lib.newlines
-
-
-
-Output
-//VARIABLE txts.OUTPUT core-lib.tabs
+ADD txts.OUTPUT core:variable.tabs
+ADD txts.OUTPUT core:variable.variableStart
+ADD txts.OUTPUT core:variable.name
+ADD txts.OUTPUT core:variable.equal
+ADD txts.OUTPUT core:variable.value
+ADD txts.OUTPUT core:variable.semicolon
+ADD txts.OUTPUT core:variable.newlines

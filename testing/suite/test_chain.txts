@@ -2,5 +2,5 @@ IMPORT suite
 IMPORT txts
 IMPORT lib
 CALL lib.combine
-VARIABLE suite.result lib.combined
-VARIABLE txts.OUTPUT suite.result
+ADD suite.result lib.combined
+ADD txts.OUTPUT suite.result

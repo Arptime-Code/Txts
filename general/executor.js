@@ -16,7 +16,8 @@ function createContext(projectRoot) {
     variables: builtins.createBuiltinVariables(),
     projectRoot: projectRoot,
     recursionDepth: 0,
-    fileImports: {}
+    fileImports: {},
+    outputBuffer: ''
   };
 }
 
@@ -30,11 +31,8 @@ function runProgram(filePath, outputTarget) {
 
   executeFile(fileResolvedPath, context);
 
-  var outputValue = '';
-
-  if (context.variables[builtins.TXTS_LIBRARY_NAME]) {
-    outputValue = context.variables[builtins.TXTS_LIBRARY_NAME][builtins.OUTPUT_VARIABLE_NAME] || '';
-  }
+  // txts.OUTPUT is resolved immediately at each ADD — outputBuffer accumulates
+  var outputValue = context.outputBuffer;
 
   if (outputTarget === OUTPUT_TARGET_STDOUT) {
     process.stdout.write(outputValue);
@@ -66,8 +64,10 @@ function executeCommands(commands, context) {
       executeImport(command, context);
     } else if (command.type === 'call') {
       executeCall(command, context);
-    } else if (command.type === 'variable') {
-      executeVariable(command, context);
+    } else if (command.type === 'add') {
+      executeAdd(command, context);
+    } else if (command.type === 'replace') {
+      executeReplace(command, context);
     }
   }
 }
@@ -76,12 +76,27 @@ function executeCommands(commands, context) {
 
 function executeImport(command, context) {
   var libraryName = command.library;
+  var projectRoot = context.projectRoot;
 
-  context.fileImports[libraryName] = true;
-
+  // Built-in txts library is always valid
   if (libraryName === builtins.TXTS_LIBRARY_NAME) {
+    context.fileImports[libraryName] = true;
     return;
   }
+
+  // Check if library resolves: either self-import (project folder name)
+  // or a folder under .local-txtspm/
+  var isSelf = resolver.isSelfImport(libraryName, projectRoot);
+  var libPath = resolver.resolveLibraryPath(libraryName, projectRoot);
+
+  if (!isSelf && !libPath) {
+    throw new Error('Cannot import "' + libraryName +
+      '": no library found with that name. ' +
+      'Make sure the library name matches the project folder name, ' +
+      'or create a folder named "' + libraryName + '" under .local-txtspm/.');
+  }
+
+  context.fileImports[libraryName] = true;
 }
 
 // === CALL ===
@@ -113,13 +128,21 @@ function executeCall(command, context) {
 
   context.fileImports = savedImports;
   context.recursionDepth = context.recursionDepth - 1;
+  // No PRIVATE isolation — all ADD variables are globally visible
 }
 
-// === VARIABLE ===
+// === ADD (hybrid chain assignment) ===
+// ADD resolves references eagerly if the variable already exists.
+// If the variable hasn't been defined yet, it stores a lazy ref
+// (forward reference) that resolves when the variable is defined.
 
-function executeVariable(command, context) {
+function executeAdd(command, context) {
   var target = command.target;
   var source = command.source;
+
+  if (!source) {
+    throw new Error('ADD requires a source. Usage: ADD library.variable "text" or ADD library.variable library.ref');
+  }
 
   if (target.library === builtins.TXTS_LIBRARY_NAME &&
       target.name !== builtins.OUTPUT_VARIABLE_NAME) {
@@ -142,53 +165,225 @@ function executeVariable(command, context) {
     }
   }
 
-  var resolvedValue = resolveValue(context, source);
+  // === SPECIAL HANDLING: txts.OUTPUT resolves immediately at ADD time ===
+  if (target.library === builtins.TXTS_LIBRARY_NAME && target.name === builtins.OUTPUT_VARIABLE_NAME) {
+    // CLEAR resets output buffer
+    if (source.type === 'reference' &&
+        source.library === builtins.TXTS_LIBRARY_NAME &&
+        source.name === builtins.CLEAR_VARIABLE_NAME) {
+      context.outputBuffer = '';
+      return;
+    }
 
-  if (typeof resolvedValue !== 'string') {
+    if (source.type === 'string') {
+      context.outputBuffer += source.value;
+      return;
+    }
+
+    if (source.type === 'reference') {
+      context.variables[source.library] = context.variables[source.library] || {};
+      if (context.variables[source.library][source.name] !== undefined) {
+        var resolved = resolveReferenceSafe(context, source.library, source.name);
+        context.outputBuffer += resolved;
+      }
+      // If the referenced variable doesn't exist, output nothing (empty string)
+      return;
+    }
+
     return;
   }
 
-  // Lazily create namespace if it doesn't exist
+  // === NORMAL CHAIN-BASED HANDLING for non-OUTPUT variables ===
+
+  // Create namespace if needed
   context.variables[target.library] = context.variables[target.library] || {};
 
-  // txts.CLEAR always clears the variable (sets to empty string)
+  // Check for CLEAR
   var isClear = source.type === 'reference' &&
     source.library === builtins.TXTS_LIBRARY_NAME &&
     source.name === builtins.CLEAR_VARIABLE_NAME;
 
   if (isClear) {
-    context.variables[target.library][target.name] = '';
-  } else {
-    // Append the source value to the target's current value
-    var currentValue = context.variables[target.library][target.name] || '';
-    context.variables[target.library][target.name] = currentValue + resolvedValue;
+    // Reset chain to empty
+    if (Array.isArray(context.variables[target.library][target.name])) {
+      context.variables[target.library][target.name] = [];
+    } else {
+      context.variables[target.library][target.name] = [];
+    }
+    return;
+  }
+
+  // Create chain if it doesn't exist
+  if (context.variables[target.library][target.name] === undefined) {
+    context.variables[target.library][target.name] = [];
+  }
+
+  // If it's already a resolved string (from REPLACE freeze), convert back to array
+  if (typeof context.variables[target.library][target.name] === 'string') {
+    context.variables[target.library][target.name] = [{type: 'value', value: context.variables[target.library][target.name]}];
+  }
+
+  // Append item to chain
+  var item = makeItem(source, context);
+  if (item) {
+    context.variables[target.library][target.name].push(item);
   }
 }
 
-// === VALUE RESOLUTION ===
+// === REPLACE (update a variable's definition) ===
+//
+// REPLACE var1 "text"   — replaces var1's chain with the string "text"
+// REPLACE var1 var2      — replaces var1's chain with a ref to var2.
+//                          Future ADD operations resolving var1 will follow the redirect.
+//
+// Scans ALL variables' chains for any remaining refs to var1 (e.g. refs created
+// by previous REPLACE var1 var2 calls) and replaces them too.
 
-function resolveValue(context, source) {
+function executeReplace(command, context) {
+  var target = command.target;
+  var sources = command.sources;
+
+  if (sources.length === 0) {
+    throw new Error('REPLACE requires a source. Usage: REPLACE library.variable "text" or REPLACE library.variable library.ref');
+  }
+
+  if (target.library === builtins.TXTS_LIBRARY_NAME &&
+      target.name !== builtins.OUTPUT_VARIABLE_NAME) {
+    throw new Error('Cannot assign to "' + target.library + '.' + target.name +
+      '": only "' + builtins.TXTS_LIBRARY_NAME + '.' + builtins.OUTPUT_VARIABLE_NAME +
+      '" is writable in the internal "' + builtins.TXTS_LIBRARY_NAME + '" library.');
+  }
+
+  if (!context.fileImports[target.library]) {
+    throw new Error('Cannot assign to "' + target.library + '.' + target.name +
+      '": library "' + target.library + '" is not imported in this file. ' +
+      'Use IMPORT ' + target.library + ' first.');
+  }
+
+  // Create namespace if needed
+  context.variables[target.library] = context.variables[target.library] || {};
+
+  // === REPLACE var1 source — GLOBAL substitution ===
+  var source = sources[0];
+
+  // Build the replacement item
+  var replacementItem;
   if (source.type === 'string') {
-    return source.value;
+    replacementItem = { type: 'value', value: source.value };
+  } else {
+    // reference — create a ref item pointing to the source variable
+    if (!context.fileImports[source.library]) {
+      throw new Error('Cannot read "' + source.library + '.' + source.name +
+        '": library "' + source.library + '" is not imported in this file. ' +
+        'Use IMPORT ' + source.library + ' first.');
+    }
+    replacementItem = { type: 'ref', library: source.library, name: source.name };
   }
 
+  // 1. Find ALL refs to target across every variable's chain, replace them
+  for (var libName in context.variables) {
+    if (context.variables.hasOwnProperty(libName)) {
+      var lib = context.variables[libName];
+      for (var varName in lib) {
+        if (lib.hasOwnProperty(varName)) {
+          var chain = lib[varName];
+          if (Array.isArray(chain)) {
+            for (var i = 0; i < chain.length; i++) {
+              if (chain[i].type === 'ref' &&
+                  chain[i].library === target.library &&
+                  chain[i].name === target.name) {
+                chain[i] = replacementItem;
+              }
+            }
+          }
+        }
+      }
+    }
+  }
+
+  // 2. Replace target's own chain with just the replacement item
+  context.variables[target.library][target.name] = [replacementItem];
+}
+
+// === ITEM CREATION ===
+//
+// Hybrid approach:
+// - If the referenced variable already exists → resolve eagerly, store the value.
+// - If the referenced variable doesn't exist yet → store a lazy ref that will
+//   resolve when the variable is defined later (forward references).
+
+function makeItem(source, context) {
+  if (source.type === 'string') {
+    return { type: 'value', value: source.value };
+  }
   if (source.type === 'reference') {
-    return resolveReference(context, source.library, source.name);
+    // Check if the source variable already exists
+    context.variables[source.library] = context.variables[source.library] || {};
+    if (context.variables[source.library][source.name] !== undefined) {
+      // Variable exists — resolve eagerly and store the value
+      var resolved = resolveReferenceSafe(context, source.library, source.name);
+      return { type: 'value', value: resolved };
+    }
+    // Variable doesn't exist yet — store a lazy ref for forward reference
+    return { type: 'ref', library: source.library, name: source.name };
   }
-
   return null;
 }
 
-function resolveReference(context, library, name) {
-  context.variables[library] = context.variables[library] || {};
+// === CHAIN RESOLUTION ===
 
-  var libVars = context.variables[library];
-
-  if (libVars[name] === undefined) {
-    throw new Error('Variable "' + library + '.' + name + '" does not exist in library "' + library + '".');
+function resolveChain(context, library, name, _depth) {
+  if (_depth > 20) {
+    throw new Error('Maximum reference depth exceeded when resolving ' + library + '.' + name);
   }
 
-  return libVars[name];
+  var items = context.variables[library][name];
+  if (!Array.isArray(items)) {
+    return items || '';
+  }
+
+  var result = '';
+  for (var i = 0; i < items.length; i++) {
+    if (items[i].type === 'value') {
+      result += items[i].value;
+    } else if (items[i].type === 'ref') {
+      result += resolveReferenceSafe(context, items[i].library, items[i].name, _depth + 1);
+    }
+  }
+  return result;
+}
+
+function resolveReferenceSafe(context, library, name, _depth) {
+  _depth = _depth || 0;
+  if (_depth > 20) {
+    throw new Error('Maximum reference depth exceeded when resolving ' + library + '.' + name);
+  }
+
+  context.variables[library] = context.variables[library] || {};
+
+  if (context.variables[library][name] !== undefined) {
+    var val = context.variables[library][name];
+    if (Array.isArray(val)) {
+      return resolveChain(context, library, name, _depth);
+    }
+    return val;
+  }
+
+  // Ref to nonexistent variable resolves to empty string
+  return '';
+}
+
+// Safe version for runProgram output (handles missing vars)
+function resolveReferenceSafeForOutput(context, library, name) {
+  context.variables[library] = context.variables[library] || {};
+  var val = context.variables[library][name];
+  if (!val) {
+    return '';
+  }
+  if (Array.isArray(val)) {
+    return resolveChain(context, library, name, 0);
+  }
+  return val;
 }
 
 // === MODULE EXPORTS ===
@@ -200,8 +395,9 @@ module.exports = {
   executeCommands: executeCommands,
   executeImport: executeImport,
   executeCall: executeCall,
-  executeVariable: executeVariable,
-  resolveReference: resolveReference,
-  resolveValue: resolveValue,
+  executeAdd: executeAdd,
+  executeReplace: executeReplace,
+  resolveChain: resolveChain,
+  resolveReferenceSafe: resolveReferenceSafe,
   OUTPUT_TARGET_STDOUT: OUTPUT_TARGET_STDOUT
 };

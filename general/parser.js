@@ -4,7 +4,8 @@ var helpers = require('./helpers');
 
 var IMPORT_PREFIX = 'IMPORT ';
 var CALL_PREFIX = 'CALL ';
-var VARIABLE_PREFIX = 'VARIABLE ';
+var ADD_PREFIX = 'ADD ';
+var REPLACE_PREFIX = 'REPLACE ';
 
 // === PARSING FUNCTIONS ===
 
@@ -37,8 +38,12 @@ function parseLine(line) {
     return parseCall(line.slice(CALL_PREFIX.length).trim());
   }
 
-  if (line.startsWith(VARIABLE_PREFIX)) {
-    return parseVariable(line.slice(VARIABLE_PREFIX.length).trim());
+  if (line.startsWith(ADD_PREFIX)) {
+    return parseAdd(line.slice(ADD_PREFIX.length).trim());
+  }
+
+  if (line.startsWith(REPLACE_PREFIX)) {
+    return parseReplace(line.slice(REPLACE_PREFIX.length).trim());
   }
 
   return null;
@@ -73,7 +78,7 @@ function parseCall(rest) {
   };
 }
 
-function parseVariable(rest) {
+function parseAdd(rest) {
   if (!rest) {
     return null;
   }
@@ -94,14 +99,40 @@ function parseVariable(rest) {
   var sourceStr = parts.slice(1).join(' ');
   var source = parseSourceToken(sourceStr.trim());
 
-  if (!source) {
+  return {
+    type: 'add',
+    target: target,
+    source: source  // may be null — executor will throw error
+  };
+}
+
+function parseReplace(rest) {
+  if (!rest) {
     return null;
   }
 
+  var parts = rest.split(' ').filter(function(p) { return p.length > 0; });
+
+  var targetStr = parts[0];
+  var target = helpers.parseDottedReference(targetStr);
+
+  if (!target) {
+    return null;
+  }
+
+  var sources = [];
+  if (parts.length > 1) {
+    var sourceStr = parts.slice(1).join(' ');
+    var source = parseSourceToken(sourceStr.trim());
+    if (source) {
+      sources.push(source);
+    }
+  }
+
   return {
-    type: 'variable',
+    type: 'replace',
     target: target,
-    source: source
+    sources: sources  // may be empty — executor will throw error
   };
 }
 
@@ -137,5 +168,6 @@ module.exports = {
   parseLine: parseLine,
   parseImport: parseImport,
   parseCall: parseCall,
-  parseVariable: parseVariable
+  parseAdd: parseAdd,
+  parseReplace: parseReplace
 };

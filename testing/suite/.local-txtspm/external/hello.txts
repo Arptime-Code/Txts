@@ -1,2 +1,2 @@
 IMPORT external
-VARIABLE external.greeting "Hello from external library"
+ADD external.greeting "Hello from external library"

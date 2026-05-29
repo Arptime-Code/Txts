@@ -1,0 +1,44 @@
+{
+  "sections": [
+    {
+      "title": "Tutorial",
+      "pages": [
+        { "id": "index",             "label": "Home" },
+        { "id": "getting-started",   "label": "Getting Started" },
+        { "id": "syntax",            "label": "Basic Syntax" },
+        { "id": "variables",         "label": "Variables & OUTPUT" },
+        { "id": "imports",           "label": "IMPORT & Libraries" },
+        { "id": "calls",             "label": "CALL & Functions" },
+        { "id": "txts-library",      "label": "The txts Library" },
+        { "id": "project-structure", "label": "Project Structure" },
+        { "id": "repl",              "label": "REPL Mode" },
+        { "id": "txtspm",            "label": "Package Manager" },
+        { "id": "examples",          "label": "Examples" },
+        { "id": "add-replace",      "label": "ADD & REPLACE Basics" }
+      ]
+    },
+    {
+      "title": "Reference",
+      "pages": [
+        { "id": "developer",        "label": "Dev Docs Home" },
+        { "id": "reference",        "label": "ADD & REPLACE Reference" },
+        { "id": "dev-cli",          "label": "CLI & Entry Point" },
+        { "id": "dev-helpers",      "label": "Helpers" },
+        { "id": "dev-parser",       "label": "Parser" },
+        { "id": "dev-resolver",     "label": "Resolver" },
+        { "id": "dev-builtins",     "label": "Builtins" },
+        { "id": "dev-executor",     "label": "Executor" },
+        { "id": "dev-txtspm",       "label": "txtspm Extension" },
+        { "id": "dev-repl",         "label": "REPL" },
+        { "id": "dev-errors",       "label": "Error Handling" }
+      ]
+    },
+    {
+      "title": "Resources",
+      "pages": [
+        { "id": "faq",             "label": "FAQ" },
+        { "id": "installation",    "label": "Installation" }
+      ]
+    }
+  ]
+}

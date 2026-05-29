@@ -17,6 +17,9 @@
       "include": "#builtin-references"
     },
     {
+      "include": "#colon-references"
+    },
+    {
       "include": "#library-references"
     },
     {
@@ -26,7 +29,7 @@
   "repository": {
     "comments": {
       "name": "comment.line.txts",
-      "match": "^(?!\\s*(IMPORT|CALL|VARIABLE)\\b).*$"
+      "match": "^(?!\\s*(IMPORT|CALL|ADD|REPLACE)\\b).*$"
     },
     "strings": {
       "name": "string.quoted.double.txts",
@@ -35,12 +38,12 @@
       "patterns": [
         {
           "name": "constant.character.escape.txts",
-          "match": "\\\\."
+          "match": "\\\\.?"
         }
       ]
     },
     "library-names": {
-      "match": "^\\s*\\b(IMPORT|CALL|VARIABLE)\\s+([a-zA-Z_][a-zA-Z0-9_-]*)\\b(?!\\.)",
+      "match": "^\\s*\\b(IMPORT|CALL|ADD|REPLACE)\\s+([a-zA-Z_][a-zA-Z0-9_-]*)\\b(?![:\\.])",
       "captures": {
         "1": {
           "name": "keyword.control.txts"
@@ -58,6 +61,26 @@
         },
         "2": {
           "name": "constant.language.txts"
+        }
+      }
+    },
+    "colon-references": {
+      "match": "\\b([a-zA-Z_][a-zA-Z0-9_-]*)(:)([a-zA-Z_][a-zA-Z0-9_-]*)(\\.([a-zA-Z_][a-zA-Z0-9_-]*))?\\b",
+      "captures": {
+        "1": {
+          "name": "support.class.txts"
+        },
+        "2": {
+          "name": "support.class.txts"
+        },
+        "3": {
+          "name": "support.class.txts"
+        },
+        "4": {
+          "name": "support.class.txts"
+        },
+        "5": {
+          "name": "constant.other.txts"
         }
       }
     },
@@ -83,8 +106,12 @@
           "match": "^\\s*\\b(CALL)\\b"
         },
         {
-          "name": "keyword.control.variable.txts",
-          "match": "^\\s*\\b(VARIABLE)\\b"
+          "name": "keyword.control.add.txts",
+          "match": "^\\s*\\b(ADD)\\b"
+        },
+        {
+          "name": "keyword.control.replace.txts",
+          "match": "^\\s*\\b(REPLACE)\\b"
         }
       ]
     }

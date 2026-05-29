@@ -1,2 +1,2 @@
 IMPORT txts
-VARIABLE txts.NAME "should fail"
+ADD txts.NAME "should fail"

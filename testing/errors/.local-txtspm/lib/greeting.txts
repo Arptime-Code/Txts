@@ -1,2 +1,2 @@
 IMPORT lib
-VARIABLE lib.greeting "Hello"
+ADD lib.greeting "Hello"

@@ -2,4 +2,4 @@ IMPORT suite
 IMPORT txts
 IMPORT lib
 CALL lib.greet
-VARIABLE txts.OUTPUT lib.greeting
+ADD txts.OUTPUT lib.greeting

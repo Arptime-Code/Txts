@@ -1,0 +1,110 @@
+tab if {
+tab tab code
+tab tab code
+tab tab code
+tab }
+
+
+What would be needed:
+- A way to copy variables in a function CALL scope/ one file scope but different calls of the same file would need to have different instances of the same varibale
+
+-- so maybe add PUBLIC and PRIVATE to VARIABLE syntax or add a special variable like CLEAR or OUTPUT to make variables PUBLIC (needed for accessed variable and applied vairbale seperately maybe...........)
+------ or make it that variable sname of a library can only be either PUBLIC or PRIVATE but never same name but different scopes...
+
+
+
+or maybe do instead of VARIBALE that you JUST say PUBLIC or PRIVATE
+
+
+
+IMPORT txts
+IMPORT core:if
+
+
+
+PUBLIC core:if.tabInput ""
+
+
+PRIVATE core:if.tabs core:if.tabInput
+PRIVATE core:if.tabs "\t"
+
+
+
+PUBLIC txts.OUTPUT core:if.tabs
+PUBLIC txts.OUTPUT "if{\n"
+
+
+PUBLIC core:if.tabInput core:if.tabs
+
+
+
+
+it would have to be:
+call first if
+then define the code for it with the second if in it
+
+
+
+or rather it would have to be: start with the inner-most if
+--- then go to the next level and insert the if code into the code input for that
+
+
+-------- so then it would be from inner most to outer  ---- but then it would be from most to least tabs
+
+
+. otherwise you would have to define code that comes before and after......   or actually i think only the code that comes before??? then you would need seperate stuff to end the ifs or non??? yes but like this it is in order so better
+
+
+
+
+so then its:
+
+startIF
+
+addCode
+
+endIF
+
+
+
+
+and all that together is newCode
+
+
+
+but the thng is the alternative with the code before the if also fits more to my library language style!!!!!!!!!!!!!!!!!!!!!!!!!!!!! or even better would be if the code is after the if definition
+
+
+or maybe the ouptut of such an if library is TWO STRINGS an if you want to nest anything inside then you have to enclose that with the two strings
+
+
+
+-------------- Create a very compact example for that please to test it out and nest like 3 levels as a test (first wihtout tab logic at all then add tab logic)
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+I would need one option that makes a variable to string immeditely like right now also and another to leave a variable as a vairbale reference until the code finished compiling and then it reads or something like that or i can later activate the variable to be a string and not a variable reference
+
+
+How to make it so that i have the minimal amount of keywords. right now its this if possible i would like to leave it at four keywords and if possible even less like 3 but i would like to not have 5 keywords if at all possible:
+//IMPORT
+//CALL
+//PUBLIC
+//PRIVATE
+
+
+
+maybe make it that when you make a private variable public then it will resolve??? but what abou double nesting then????

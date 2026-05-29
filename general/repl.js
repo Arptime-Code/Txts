@@ -26,7 +26,7 @@ function startRepl() {
 
   var version = getVersion();
   console.log('txts REPL v' + version + ' — Type txts commands interactively.');
-  console.log('  Commands: IMPORT  CALL  VARIABLE');
+  console.log('  Commands: IMPORT  CALL  ADD  REPLACE');
   console.log('  Meta:     .help  .clear  .vars  .reset  .mode  exit');
   console.log('');
   rl.prompt();
@@ -81,9 +81,10 @@ function processLine(line, context) {
     executor.executeImport(command, context);
     console.log('(imported ' + command.library + ')');
   } else if (command.type === 'call') {
-    executor.executeCall(command, context);
-  } else if (command.type === 'variable') {
-    executor.executeVariable(command, context);
+    executor.executeCall(command, context);    } else if (command.type === 'add') {
+    executor.executeAdd(command, context);
+  } else if (command.type === 'replace') {
+    executor.executeReplace(command, context);
   }
 
   var newOutput = getOutputValue(context);
@@ -97,7 +98,15 @@ function processLine(line, context) {
 
 function getOutputValue(context) {
   if (context.variables[builtins.TXTS_LIBRARY_NAME]) {
-    return context.variables[builtins.TXTS_LIBRARY_NAME][builtins.OUTPUT_VARIABLE_NAME] || '';
+    var val = context.variables[builtins.TXTS_LIBRARY_NAME][builtins.OUTPUT_VARIABLE_NAME];
+    if (Array.isArray(val)) {
+      try {
+        return executor.resolveChain(context, builtins.TXTS_LIBRARY_NAME, builtins.OUTPUT_VARIABLE_NAME, 0);
+      } catch (e) {
+        return '(error: ' + e.message + ')';
+      }
+    }
+    return val || '';
   }
 
   return '';
@@ -116,7 +125,7 @@ function handleMetaCommand(line, context) {
 
     case '.clear':
       if (context.variables[builtins.TXTS_LIBRARY_NAME]) {
-        context.variables[builtins.TXTS_LIBRARY_NAME][builtins.OUTPUT_VARIABLE_NAME] = '';
+        context.variables[builtins.TXTS_LIBRARY_NAME][builtins.OUTPUT_VARIABLE_NAME] = [];
       }
       console.log('(output cleared)');
       break;
@@ -163,8 +172,11 @@ function printMetaHelp() {
   console.log('');
   console.log('txts commands:');
   console.log('  IMPORT <library>');
-  console.log('  VARIABLE <lib.var> "<value>"');
-  console.log('  VARIABLE <lib.var> <lib.ref>');
+  console.log('  ADD <lib.var> "<value>"');
+  console.log('  ADD <lib.var> <lib.ref>');
+  console.log('  REPLACE <lib.var>');
+  console.log('  REPLACE <lib.var> "<value>"');
+  console.log('  REPLACE <lib.var> <lib.ref>');
   console.log('  CALL <lib.function>');
 }
 
@@ -176,13 +188,23 @@ function printVariables(context) {
       var vars = context.variables[lib];
       for (var name in vars) {
         if (vars.hasOwnProperty(name)) {
-          // Skip internal sentinel variables
           if (name === 'CLEAR') {
             continue;
           }
           found = true;
           var val = vars[name];
-          console.log('  ' + lib + '.' + name + ' = "' + val + '"');
+          var displayVal;
+
+          if (Array.isArray(val)) {
+            try {
+              displayVal = executor.resolveChain(context, lib, name, 0);
+              console.log('  [chain] ' + lib + '.' + name + ' = "' + displayVal + '"');
+            } catch (e) {
+              console.log('  [chain] ' + lib + '.' + name + ' = (error: ' + e.message + ')');
+            }
+          } else {
+            console.log('  [value] ' + lib + '.' + name + ' = "' + val + '"');
+          }
         }
       }
     }

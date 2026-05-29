@@ -1,2 +1,2 @@
 IMPORT txts
-VARIABLE txts.OUTPUT "Goodbye from external"
+ADD txts.OUTPUT "Goodbye from external"

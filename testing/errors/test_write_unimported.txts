@@ -1,1 +1,1 @@
-VARIABLE other.x "hello"
+ADD other.x "hello"
