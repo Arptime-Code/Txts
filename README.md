@@ -20,7 +20,7 @@ Create a file called `hello.txts`:
 
 ```txts
 IMPORT txts
-VARIABLE txts.OUTPUT "Hello, world!"
+ADD txts.OUTPUT "Hello, world!"
 ```
 
 Then run it:
@@ -46,7 +46,7 @@ txts hello.txts
 
 ## Why txts?
 
-- **Only 3 commands** &mdash; `IMPORT`, `CALL`, `VARIABLE`. That's it.
+- **Only 4 commands** &mdash; `IMPORT`, `CALL`, `ADD`, and `REPLACE`. That's it.
 - **Library-based** &mdash; Code is organized into libraries with simple dot notation (`lib.function`).
 - **Synchronous** &mdash; Predictable, sequential execution. No async, no parallelism.
 - **Reliability through composition** &mdash; Many small, carefully-crafted libraries compose into reliable systems.
@@ -57,13 +57,14 @@ txts hello.txts
 
 ## Language Overview
 
-### The Three Commands
+### The Commands
 
 | Command | Purpose | Example |
 |---------|---------|---------|
 | `IMPORT` | Import a library namespace | `IMPORT lib` |
 | `CALL` | Execute a function from a library | `CALL lib.sayhello` |
-| `VARIABLE` | Append a value to a variable | `VARIABLE txts.OUTPUT "hello"` |
+| `ADD` | Append a value to a variable chain | `ADD txts.OUTPUT "hello"` |
+| `REPLACE` | Replace a variable's chain or redirect it | `REPLACE lib.result lib.other` |
 
 ### Comments
 
@@ -73,7 +74,7 @@ Any line that does **not** start with a keyword is treated as a comment:
 This is a comment. It's completely ignored by the interpreter.
 
 IMPORT txts
-VARIABLE txts.OUTPUT "Hello"
+ADD txts.OUTPUT "Hello"
 ```
 
 ### Variables & Output
@@ -83,13 +84,13 @@ Variables use **dot notation**: `library.name`. The built-in `txts.OUTPUT` varia
 ```txts
 IMPORT txts
 
-VARIABLE txts.OUTPUT "Hello, "
-VARIABLE txts.OUTPUT "world!"
+ADD txts.OUTPUT "Hello, "
+ADD txts.OUTPUT "world!"
 ```
 
 Output: `Hello, world!`
 
-Values **append** to variables &mdash; each `VARIABLE` call adds to whatever was there before. Use `txts.CLEAR` to reset a variable to empty.
+Values **append** to variables &mdash; each `ADD` call adds to whatever was there before. Use `txts.CLEAR` to reset a variable to empty.
 
 ### Libraries & Functions
 
@@ -105,7 +106,7 @@ Libraries must be imported before they can be used. Functions set variables in t
 ```txts
 # lib/greet.txts
 IMPORT txts
-VARIABLE lib.greeting "Howdy"
+ADD lib.greeting "Howdy"
 ```
 
 ### Built-in Library (`txts`)
@@ -198,7 +199,7 @@ Comprehensive documentation is available in the [`docs/`](docs/) directory:
 | Page | Description |
 |------|-------------|
 | [Getting Started](docs/getting-started.html) | Setup and first program |
-| [Basic Syntax](docs/syntax.html) | The three commands |
+| [Basic Syntax](docs/syntax.html) | The four commands |
 | [Variables & OUTPUT](docs/variables.html) | Storing and outputting values |
 | [IMPORT & Libraries](docs/imports.html) | Using libraries and namespaces |
 | [CALL & Functions](docs/calls.html) | Executing library functions |
@@ -233,7 +234,7 @@ The documentation is also available online at:
 
 ```txts
 IMPORT txts
-VARIABLE txts.OUTPUT "Hello, world!"
+ADD txts.OUTPUT "Hello, world!"
 ```
 
 ### Greeting Function
@@ -241,22 +242,22 @@ VARIABLE txts.OUTPUT "Hello, world!"
 ```txts
 # lib/greet.txts
 IMPORT txts
-VARIABLE lib.greeting "Howdy"
+ADD lib.greeting "Howdy"
 
 # main.txts
 IMPORT txts
 IMPORT lib
 CALL lib.greet
-VARIABLE txts.OUTPUT lib.greeting
+ADD txts.OUTPUT lib.greeting
 ```
 
 ### Using CLEAR
 
 ```txts
 IMPORT txts
-VARIABLE txts.OUTPUT "This will be cleared"
-VARIABLE txts.OUTPUT txts.CLEAR
-VARIABLE txts.OUTPUT "Fresh start"
+ADD txts.OUTPUT "This will be cleared"
+ADD txts.OUTPUT txts.CLEAR
+ADD txts.OUTPUT "Fresh start"
 ```
 
 Output: `Fresh start`

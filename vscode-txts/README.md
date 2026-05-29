@@ -4,7 +4,7 @@ Syntax highlighting for **.txts** files — the txts programming language.
 
 ## Features
 
-- Highlight `IMPORT`, `CALL`, and `VARIABLE` keywords
+- Highlight `IMPORT`, `CALL`, `ADD`, and `REPLACE` keywords
 - Highlight string literals (`"...`)
 - Highlight dotted variable references (`lib.variable`)
 - Highlight built-in `txts.OUTPUT` and `txts.CLEAR` references

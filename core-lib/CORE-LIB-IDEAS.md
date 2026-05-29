@@ -36,4 +36,4 @@
 ---
 
 > **How to read the namespace:** `core:if` → `IMPORT core:if`, `CALL core:if`, etc.
-> Each module defines INSTANCE variables that the caller fills in, then RESOLVEs into OUTPUT.
+> Each module defines variables that the caller fills in with `ADD`, then outputs via `txts.OUTPUT`.

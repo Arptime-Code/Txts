@@ -8,12 +8,12 @@ tab }
 What would be needed:
 - A way to copy variables in a function CALL scope/ one file scope but different calls of the same file would need to have different instances of the same varibale
 
--- so maybe add PUBLIC and PRIVATE to VARIABLE syntax or add a special variable like CLEAR or OUTPUT to make variables PUBLIC (needed for accessed variable and applied vairbale seperately maybe...........)
+-- so maybe add PUBLIC and PRIVATE to the syntax or add a special variable like CLEAR or OUTPUT to make variables PUBLIC (needed for accessed variable and applied vairbale seperately maybe...........)
 ------ or make it that variable sname of a library can only be either PUBLIC or PRIVATE but never same name but different scopes...
 
 
 
-or maybe do instead of VARIBALE that you JUST say PUBLIC or PRIVATE
+or maybe do instead of using ADD/REPLACE that you just say PUBLIC or PRIVATE
 
 
 
